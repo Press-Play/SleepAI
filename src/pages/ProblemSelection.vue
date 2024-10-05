@@ -71,7 +71,7 @@
       {{ this.sleepProfileProblems }}
       <!-- I have trouble with <span class="underline decoration-dotted">getting to sleep within 20 minutes</span> and <span class="underline decoration-dotted">because I snore</span>. -->
     </div>
-    <button>Submit</button>
+    <button @click="goNext">Submit</button>
   </div>
 </template>
 
@@ -190,6 +190,9 @@ export default {
     }
   },
   methods: {
+    goNext() {
+      this.$router.push('/reco')
+    },
     firstLetterLowerCase(string) {
       if (string.length <= 1) return string
       return string.charAt(0).toLowerCase() + string.slice(1);

@@ -4,9 +4,11 @@ import './registerServiceWorker'
 import './index.css';
 import { createWebHistory, createRouter } from 'vue-router'
 import ProblemsView from './pages/ProblemSelection.vue'
+import RecommendationsView from './pages/SleepRecommendation.vue'
 
 const routes = [
   { path: '/', component: ProblemsView },
+  { path: '/reco', component: RecommendationsView },
 ]
 
 const router = createRouter({
