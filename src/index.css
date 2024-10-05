@@ -22,3 +22,9 @@
     @apply bg-teal-400 hover:bg-teal-400/75 text-white font-bold mt-5 py-2 px-4 rounded;
   }
 }
+
+@layer components {
+  .problem-selected {
+    @apply !ring-2 !ring-slate-800;
+  }
+}
