@@ -20,9 +20,11 @@
       </div>
     </div>
   </div>
-  <div class="fixed flex flex-row justify-between inset-x-0 bottom-0 px-8 py-4 rounded-full bg-gray-100 cursor-pointer">
-    <input type="text" name="chat" placeholder="Chat with coach" class="grow placeholder:text-slate-500 bg-transparent active:none focus:outline-none focus:border-none">
-    <div class="text-xl text-slate-500 cursor-pointer">&#8963;</div>
+  <div class="fixed inset-x-0 bottom-0 w-full max-w-screen-sm left-1/2 -translate-x-1/2 px-4">
+    <div class="flex flex-row justify-between px-8 pt-4 pb-8 rounded-t-3xl bg-gray-100 cursor-pointer">
+      <input type="text" name="chat" placeholder="Chat with coach" class="grow placeholder:text-slate-500 bg-transparent active:none focus:outline-none focus:border-none">
+      <div class="text-xl text-slate-500 cursor-pointer">&#8963;</div>
+    </div>
   </div>
 </template>
 
