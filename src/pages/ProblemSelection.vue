@@ -1,6 +1,6 @@
 <template>
   <!-- TODO: Load selections from local storage -->
-  <div class="relative mt-20 mb-20">
+  <div class="relative mt-20 mb-20 max-w-screen-sm left-1/2 -translate-x-1/2">
     <div class="px-12">
       <h2><span class="font-bold">Khanh</span>, build your sleep profile</h2>
       <p>This will help us make personalised recommendations. Tell us what you have trouble with.</p>
@@ -263,9 +263,9 @@ export default {
     }
   },
   beforeMount() {
-    if (localStorage.getItem("sleepProblems") !== null) {
-      this.sleepProblems = JSON.parse(localStorage.getItem("sleepProblems"))
-    }
+    // if (localStorage.getItem("sleepProblems") !== null) {
+    //   this.sleepProblems = JSON.parse(localStorage.getItem("sleepProblems"))
+    // }
   }
 }
 </script>
