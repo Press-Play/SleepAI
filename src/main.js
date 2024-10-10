@@ -3,26 +3,37 @@ import App from './App.vue'
 import './registerServiceWorker'
 import './index.css';
 import { createWebHistory, createRouter } from 'vue-router'
-import { VueFire, VueFireAuth } from 'vuefire'
+import { VueFire, VueFireAuth, getCurrentUser } from 'vuefire'
 import { getFirebaseApp } from './firebase'
 
 import ProblemsView from './pages/ProblemSelection.vue'
 import RecommendationsView from './pages/SleepRecommendation.vue'
-import FitbitAuthView from './pages/FitbitAuthentication.vue'
 import UserAuthView from './pages/UserAuth.vue'
 import OnboardingNameView from './pages/OnboardingName.vue'
+import FitbitAuthView from './pages/FitbitAuthentication.vue'
+import ForbiddenView from './pages/ForbiddenPage.vue'
 
 const routes = [
   { path: '/', component: ProblemsView },
   { path: '/reco', component: RecommendationsView },
-  { path: '/app', component: FitbitAuthView },
-  { path: '/auth', component: UserAuthView },
+  { path: '/auth', component: UserAuthView},
   { path: '/onboarding/name', component: OnboardingNameView },
+  { path: '/onboarding/import', component: FitbitAuthView, meta: { isAnonymous: true } },
+  { path: '/forbidden', component: ForbiddenView, name: 'Forbidden' }
 ]
 
 const router = createRouter({
   history: createWebHistory(),
   routes,
+})
+
+router.beforeEach(async (to, from) => {
+  const user = await getCurrentUser()
+  if (to.meta.isAnonymous && !user) {
+    return { name: 'Forbidden' }
+  }
+  console.log('to:', to)
+  console.log('from:', from)
 })
 
 const { firebaseApp } = getFirebaseApp()
