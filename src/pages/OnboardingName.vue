@@ -22,6 +22,7 @@
 </template>
 
 <script setup>
+import { getFirestore, doc, setDoc } from 'firebase/firestore'
 import { getAuth, signInAnonymously, updateProfile } from "firebase/auth";
 import { getCurrentUser } from 'vuefire'
 </script>
@@ -42,9 +43,17 @@ export default {
   methods: {
     validateKey() {
     },
+    async updateName(user, name) {
+      // Update name to user auth object.
+      const result = await updateProfile(user, {
+        displayName: name
+      })
+      return result
+    },
     async goToNext() {
       this.loading = true
       const auth = getAuth()
+      const db = getFirestore()
 
       // See if a current user is logged in, otherwise create anon user.
       let user = await getCurrentUser()
@@ -54,6 +63,11 @@ export default {
           .then((result) => {
             user = result.user
             console.log('result:', result)
+            // Save user to Firestore users collection.
+            return setDoc(doc(db, 'users', user.uid), {})
+          })
+          .then(() => {
+            return this.updateName(user, this.name)
           })
           .catch((error) => {
             const errorCode = error.code
@@ -64,16 +78,13 @@ export default {
       } else {
         console.log('user:', user)
         console.log('user.uid:', user.uid)
+        await this.updateName(user, this.name)
       }
       console.log('name:', this.name)
 
-      // Save name to user auth object.
-      await updateProfile(auth.currentUser, {
-        displayName: this.name
-      })
-
-      // TODO: Save name to Firestore users collection.
-      // TODO: Go to next onboarding page.
+      // Go to next onboarding page.
+      this.$router.push('/onboarding/import')
+      this.loading = false
     }
   },
 }

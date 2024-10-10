@@ -1,6 +1,6 @@
 import { initializeApp } from 'firebase/app'
 import { getAuth, connectAuthEmulator } from 'firebase/auth'
-// import { getFirestore } from 'firebase/firestore'
+import { getFirestore, connectFirestoreEmulator } from 'firebase/firestore'
 // import { getAnalytics } from 'firebase/analytics'
 import firebaseJSON from '../firebase.json'
 
@@ -17,10 +17,11 @@ const firebaseConfig = {
 export function getFirebaseApp() {
   const firebaseApp = initializeApp(firebaseConfig)
   const auth = getAuth(firebaseApp)
+  const db = getFirestore(firebaseApp)
   if (process.env.NODE_ENV === 'development') {
     connectAuthEmulator(auth, 'http://localhost:' + firebaseJSON.emulators.auth.port)
+    connectFirestoreEmulator(db, 'localhost', firebaseJSON.emulators.firestore.port);
   }
-  // const db = getFirestore(firebaseApp)
   // const firebaseAnalytics = getAnalytics(firebaseApp)
   return { firebaseApp, auth }
 }
