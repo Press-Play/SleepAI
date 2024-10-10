@@ -3,14 +3,19 @@ import App from './App.vue'
 import './registerServiceWorker'
 import './index.css';
 import { createWebHistory, createRouter } from 'vue-router'
+import { VueFire, VueFireAuth } from 'vuefire'
+import { getFirebaseApp } from './firebase'
+
 import ProblemsView from './pages/ProblemSelection.vue'
 import RecommendationsView from './pages/SleepRecommendation.vue'
 import FitbitAuthView from './pages/FitbitAuthentication.vue'
+import UserAuthView from './pages/UserAuth.vue'
 
 const routes = [
   { path: '/', component: ProblemsView },
   { path: '/reco', component: RecommendationsView },
   { path: '/app', component: FitbitAuthView },
+  { path: '/auth', component: UserAuthView },
 ]
 
 const router = createRouter({
@@ -18,6 +23,14 @@ const router = createRouter({
   routes,
 })
 
+const { firebaseApp } = getFirebaseApp()
+
 createApp(App)
   .use(router)
+  .use(VueFire, {
+    firebaseApp,
+    modules: [
+      VueFireAuth()
+    ]
+  })
   .mount('#app')
