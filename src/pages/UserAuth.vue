@@ -29,8 +29,8 @@ export default {
       const auth = getAuth()
       signInWithPopup(auth, new GoogleAuthProvider())
         .then((result) => {
-          let token = result.credential.accessToken;
-          let user = result.user;
+          let token = result.credential.accessToken
+          let user = result.user
           console.log(token) // Token
           console.log(user) // User that was authenticated
         })
