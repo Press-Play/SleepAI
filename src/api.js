@@ -1,72 +1,80 @@
-function getToken() {
-  // TODO: Make this use cookies instead.
-  return localStorage.getItem('accessToken')
-}
-
-function getUserId() {
-  // TODO: Make this use cookies instead.
-  return localStorage.getItem('userId')
-}
-
 export default class FetchWrapper {
-  constructor(baseURI = 'https://api.fitbit.com/1.2/user/') {
-    const userId = getUserId();
-    if (userId === null) {
-      throw new Error("No user ID");
-    }
-    this.baseURI = baseURI + userId + '/';
-    this.token = getToken();
-    if (this.token === null) {
-      throw new Error("No access token");
+  static CONTENT_TYPE_JSON = 'application/json'
+  static CONTENT_TYPE_FORM_ENCODED = 'application/x-www-form-urlencoded'
+
+  constructor(baseURI, contentType = FetchWrapper.CONTENT_TYPE_JSON) {
+    this.baseURI = baseURI
+    this.contentType = contentType
+    this.accessToken = this.getAccessToken()
+  }
+
+  // Extend class and override this function to provide a bearer access token.
+  getAccessToken() {
+    return null
+  }
+
+  // Extend class and override this function to run when call returns an error.
+  onError() {
+    return null
+  }
+
+  prepareBody(data) {
+    switch(this.contentType) {
+      case FetchWrapper.CONTENT_TYPE_JSON:
+        return JSON.stringify(data)
+      case FetchWrapper.CONTENT_TYPE_FORM_ENCODED:
+        return new URLSearchParams(data)
+      default:
+        throw new Error('Unsupported content type.')
     }
   }
 
   wait(delay) {
-    return new Promise((resolve) => setTimeout(resolve, delay));
+    return new Promise((resolve) => setTimeout(resolve, delay))
   }
 
   async get(path, tries = 1, delay = 500) {
     const response = await this.call(`${this.baseURI}${path}`, {
       method: 'GET',
       headers: {
-        'Authorization': 'Bearer ' + this.token,
+        ...(this.accessToken && {'Authorization': 'Bearer ' + this.accessToken}),
       },
     }, tries, delay)
-    return response;
+    return response
   }
 
   async put(path, data, tries = 1, delay = 500) {
     const response = await this.call(`${this.baseURI}${path}`, {
       method: 'PUT',
-      body: JSON.stringify(data),
+      body: this.prepareBody(data),
       headers: {
-        'Authorization': 'Bearer ' + this.token,
-        'Content-Type': 'application/json',
+        ...(this.accessToken && {'Authorization': 'Bearer ' + this.accessToken}),
+        ...(this.contentType && {'Content-Type': this.contentType}),
       },
-    }, tries, delay);
-    return response;
+    }, tries, delay)
+    return response
   }
 
   async post(path, data, tries = 1, delay = 500) {
     const response = await this.call(`${this.baseURI}${path}`, {
       method: 'POST',
-      body: JSON.stringify(data),
+      body: this.prepareBody(data),
       headers: {
-        'Authorization': 'Bearer ' + this.token,
-        'Content-Type': 'application/json',
+        ...(this.accessToken && {'Authorization': 'Bearer ' + this.accessToken}),
+        ...(this.contentType && {'Content-Type': this.contentType}),
       },
-    }, tries, delay);
-    return response;
+    }, tries, delay)
+    return response
   }
 
   async delete(path, tries = 1, delay = 500) {
     const response = await this.call(`${this.baseURI}${path}`, {
       method: 'DELETE',
       headers: {
-        'Authorization': 'Bearer ' + this.token,
+        ...(this.accessToken && {'Authorization': 'Bearer ' + this.accessToken}),
       },
-    }, tries, delay);
-    return response;
+    }, tries, delay)
+    return response
   }
 
   async call(url, options = {}, tries = 1, delay = 500) {
@@ -78,15 +86,20 @@ export default class FetchWrapper {
           err.status = response.status
           throw err
         }
-        return response.json();
+        return response.json()
       })
       .catch(err => {
-        const triesLeft = tries - 1;
+        this.onError(err).then(errorResponse => {
+          return errorResponse
+        })
+
+        // Retry the call.
+        const triesLeft = tries - 1
         if (!triesLeft) {
-          throw err;
+          throw err
         }
-        return this.wait(delay).then(() => this.call(url, options, delay, triesLeft));
-      });
-    return response;
+        return this.wait(delay).then(() => this.call(url, options, delay, triesLeft))
+      })
+    return response
   }
 }

@@ -36,3 +36,9 @@ Run Firebase emulators for development.
 ```
 firebase emulators:start
 ```
+
+### Fitbit
+Needs `.env.local` with app client ID.
+```
+VUE_APP_FITBIT_CLIENT_ID
+```

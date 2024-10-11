@@ -28,10 +28,16 @@
     @apply text-lg font-medium mb-1;
   }
   button {
-    @apply min-w-32 bg-teal-400 hover:bg-teal-400/80 text-white font-bold mt-4 py-2 px-4 rounded-full self-center;
+    @apply min-w-32 bg-teal-400 hover:bg-teal-400/80 text-white font-bold mt-4 py-2 px-6 rounded-full self-center;
   }
   button:disabled {
     @apply bg-teal-400/50 cursor-not-allowed;
+  }
+  button.button-secondary {
+    @apply bg-white hover:bg-teal-50/50 text-slate-900 ring-1 ring-inset ring-teal-400
+  }
+  button.button-secondary:disabled {
+    @apply bg-gray-50 text-gray-400 ring-gray-400 cursor-not-allowed;
   }
   input {
     @apply rounded-md border-0 py-1.5 px-3 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-teal-400 active:ring-1 active:ring-inset active:ring-teal-400 focus-visible:outline-none;

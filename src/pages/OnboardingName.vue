@@ -5,9 +5,7 @@
         <h2>Hi there, what's your name?</h2>
         <p>Let's get to know each other 😄</p>
       </div>
-      <!-- <label for="name" class="block text-sm font-medium leading-6 text-gray-900">Name</label> -->
       <div class="relative mt-6 mb-2 rounded-md shadow-sm max-w-md">
-        <!-- v-model=""  -->
         <input type="text" name="name" v-model="name" @blur="validateKey" v-on:input="validateKey" class="w-full" placeholder="Name"/>
       </div>
       <button @click="goToNext()" :disabled="error || name === '' || loading" class="inline-flex items-center place-content-center">
