@@ -1,21 +1,22 @@
+// This is intended to be an abstract class. Extend this class and implement
+// the getAccessToken() to get the API bearer token and async onError() to run
+// when an API call returns an error.
 export default class FetchWrapper {
   static CONTENT_TYPE_JSON = 'application/json'
   static CONTENT_TYPE_FORM_ENCODED = 'application/x-www-form-urlencoded'
 
   constructor(baseURI, contentType = FetchWrapper.CONTENT_TYPE_JSON) {
+    if (this.constructor === FetchWrapper) {
+      throw new Error('Class is of abstract type and can not be instantiated.')
+    }
+
+    if (this.getAccessToken === undefined || this.onError === undefined) {
+      throw new Error('Class requires getAccessToken and onError to be implemented.')
+    }
+
     this.baseURI = baseURI
     this.contentType = contentType
     this.accessToken = this.getAccessToken()
-  }
-
-  // Extend class and override this function to provide a bearer access token.
-  getAccessToken() {
-    return null
-  }
-
-  // Extend class and override this function to run when call returns an error.
-  onError() {
-    return null
   }
 
   prepareBody(data) {
@@ -31,6 +32,12 @@ export default class FetchWrapper {
 
   wait(delay) {
     return new Promise((resolve) => setTimeout(resolve, delay))
+  }
+
+  setBaseURI(baseURI) {
+    const oldURI = this.baseURI
+    this.baseURI = baseURI
+    return oldURI
   }
 
   async get(path, tries = 1, delay = 500) {

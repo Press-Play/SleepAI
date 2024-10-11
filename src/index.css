@@ -31,7 +31,7 @@
     @apply min-w-32 bg-teal-400 hover:bg-teal-400/80 text-white font-bold mt-4 py-2 px-6 rounded-full self-center;
   }
   button:disabled {
-    @apply bg-teal-400/50 cursor-not-allowed;
+    @apply opacity-50 cursor-not-allowed;
   }
   button.button-secondary {
     @apply bg-white hover:bg-teal-50/50 text-slate-900 ring-1 ring-inset ring-teal-400

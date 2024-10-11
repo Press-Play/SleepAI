@@ -5,8 +5,9 @@
         <h2>Connect your sleep data</h2>
         <p>This helps you get the best personalised recommendations 😇</p>
       </div>
-      <button @click="authFitbitRequest()" :disabled="loading" class="inline-flex items-center place-content-center">
-        <span>Connect</span>
+      <button @click="authFitbitRequest()" :disabled="loading || fitbit" class="inline-flex items-center place-content-center">
+        <span v-if="fitbit">Connected to</span>
+        <span v-else>Connect</span>
         <svg xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 180 45" class="h-4 ml-2 p-px">
           <path d="m 66.842626,15.959 -8.448146,0 0,-4.122 c 0.03841,-4.7775 1.310795,-6.5516 2.712818,-7.4615 1.440434,-0.9459 3.629894,-1.0299 5.735328,-1.0083 0.890668,0 1.608485,-0.7202 1.608485,-1.6085 0,-0.881 -0.717817,-1.5989 -1.608485,-1.5989 -2.086229,0.014 -4.923884,-0.074 -7.456647,1.5005 -2.571175,1.6133 -4.230075,4.8735 -4.194064,10.1767 l 0,4.122 -3.300994,0 c -0.888268,0 -1.608485,0.7226 -1.608485,1.6037 0,0.8859 0.720217,1.6085 1.608485,1.6085 l 3.300994,0 0,24.0384 c 0,0.8763 0.720217,1.5989 1.603684,1.5989 0.888267,0 1.606084,-0.7226 1.606084,-1.5989 -0.0024,-15.3718 -0.0072,-16.4329 -0.0072,-24.0384 l 8.448146,0 c 0.885867,0 1.613286,-0.7226 1.613286,-1.6085 0,-0.8811 -0.727419,-1.6037 -1.613286,-1.6037" style="fill:#142529;stroke:none"/>
           <path d="m 104.62425,41.6095 0,-0.01 c -2.70081,0.024 -4.883071,-0.1368 -6.119444,-1.0635 -1.224369,-0.8787 -2.314297,-2.7825 -2.328702,-7.6343 l 0,-13.6889 8.448146,0 c 0.88587,0 1.60368,-0.7179 1.60368,-1.6037 0,-0.8907 -0.71781,-1.6037 -1.60368,-1.6037 l -8.448146,0 0,-14.2411 c 0,-0.8859 -0.717816,-1.6037 -1.608484,-1.6037 -0.883467,0 -1.596481,0.7178 -1.596481,1.6037 l 0,14.2411 -3.300995,0 c -0.885867,0 -1.608485,0.713 -1.608485,1.6037 0,0.8858 0.722618,1.6037 1.608485,1.6037 l 3.300995,0 0,13.6889 c -0.01921,5.2288 1.219567,8.4721 3.665904,10.2415 2.434334,1.6973 5.286397,1.6493 7.987207,1.6637 0.88587,0 1.60368,-0.7082 1.60368,-1.5989 0,-0.8859 -0.71781,-1.5989 -1.60368,-1.5989" style="fill:#142529;stroke:none"/>
@@ -30,6 +31,7 @@
           <path d="m 81.375886,7.2424 c 0,1.7706961 -1.43545,3.206128 -3.206167,3.206128 -1.770717,0 -3.206166,-1.4354319 -3.206166,-3.206128 0,-1.7706956 1.435449,-3.206128 3.206166,-3.206128 1.770717,0 3.206167,1.4354325 3.206167,3.206128 z" style="fill:#2ebec0;stroke:none"/>
           <path d="m 155.8204,7.2424 c 0,1.7706961 -1.43545,3.206128 -3.20617,3.206128 -1.77072,0 -3.20617,-1.4354319 -3.20617,-3.206128 0,-1.7706956 1.43545,-3.206128 3.20617,-3.206128 1.77072,0 3.20617,1.4354325 3.20617,3.206128 z" style="fill:#2ebec0;stroke:none"/>
         </svg>
+        <svg v-if="fitbit" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon" class="h-4 ml-2"><path fill-rule="evenodd" stroke="currentColor" stroke-width="1" d="M16.704 4.153a.75.75 0 0 1 .143 1.052l-8 10.5a.75.75 0 0 1-1.127.075l-4.5-4.5a.75.75 0 0 1 1.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 0 1 1.05-.143Z" clip-rule="evenodd"></path></svg>
       </button>
       <button @click="goToNext()" :disabled="loading" class="button-secondary">Skip</button>
       <button @click="getSleepData('2024-09-30', '2024-10-06')">Get sleep data</button>
@@ -43,7 +45,7 @@
 </template>
 
 <script>
-import { FitbitAuthAPI, FitbitUserAPI } from '../fitbit.js'
+import { FitbitAuth, FitbitUserAPI } from '../fitbit.js'
 
 // TODO: Extract out Fitbit auth into component.
 export default {
@@ -54,12 +56,13 @@ export default {
       authCode: undefined,
       sleepData: [],
       loading: false,
+      fitbit: false,
     }
   },
   beforeMount() {
     this.authFitbitResponse()
   },
-  methods: {   
+  methods: {
     getCodeVerifier(size = 64) {
       const randomArray = crypto.getRandomValues(new Uint8Array(size));
       return Array.from(randomArray, (dec) => dec.toString(36)
@@ -79,6 +82,8 @@ export default {
         });
     },
     authFitbitRequest() {
+      this.loading = true
+
       // Step 1: Generate PKCE Code Verifier, PKCE Code Challenge, and State.
       this.codeVerifier = this.getCodeVerifier()
       localStorage.setItem('codeVerifier', this.codeVerifier)
@@ -97,24 +102,31 @@ export default {
       });
     },
     authFitbitResponse() {
+      const apiAuth = new FitbitAuth()
+      this.loading = true
+      this.fitbit = apiAuth.isConnected()
+
       // Step 3: Handle the Redirect
       this.authCode = this.$route.query.code
       const returnState = this.$route.query.state
 
       console.log('authCode:', this.authCode)
       console.log('returnState:', returnState)
-      if (this.authCode === undefined && returnState === undefined)
+      if (this.authCode === undefined && returnState === undefined) {
+        this.loading = false
         return
+      }
 
       // Step 4: Get Tokens.
       // Request will contain clientID, authCode, and codeVerifier.
       // var startState = ''
       const codeVerifier = localStorage.getItem('codeVerifier')
-      const apiAuth = new FitbitAuthAPI()
-      apiAuth.getToken(this.authCode, codeVerifier).then(data => {
+      apiAuth.requestAccessToken(this.authCode, codeVerifier).then(data => {
         console.log('data:', data)
         // Clear the params once we're done here.
         this.$router.replace(this.$router.currentRoute.path)
+        this.loading = false
+        this.fitbit = apiAuth.isConnected()
       })
       .catch(err => {
         throw err;
