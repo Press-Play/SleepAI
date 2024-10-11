@@ -113,6 +113,8 @@ export default {
       const apiAuth = new FitbitAuthAPI()
       apiAuth.getToken(this.authCode, codeVerifier).then(data => {
         console.log('data:', data)
+        // Clear the params once we're done here.
+        this.$router.replace(this.$router.currentRoute.path)
       })
       .catch(err => {
         throw err;
