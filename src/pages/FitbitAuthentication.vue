@@ -108,10 +108,10 @@ export default {
         window.location.replace(redirectURL);
       });
     },
-    authFitbitResponse() {
+    async authFitbitResponse() {
       const apiAuth = new FitbitAuth()
       this.loading = true
-      this.fitbit = apiAuth.isConnected()
+      this.fitbit = await apiAuth.isConnected()
 
       // Step 3: Handle the Redirect
       this.authCode = this.$route.query.code
@@ -133,7 +133,10 @@ export default {
         // Clear the params once we're done here.
         this.$router.replace(this.$router.currentRoute.path)
         this.loading = false
-        this.fitbit = apiAuth.isConnected()
+        return apiAuth.isConnected()
+      })
+      .then(connected => {
+        this.fitbit = connected
       })
       .catch(err => {
         throw err;

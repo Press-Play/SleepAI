@@ -40,6 +40,12 @@ export default class FetchWrapper {
     return oldURI
   }
 
+  setAccessToken(newToken) {
+    const oldToken = this.accessToken
+    this.accessToken = newToken
+    return oldToken
+  }
+
   async get(path, tries = 1, delay = 500) {
     const response = await this.call(`${this.baseURI}${path}`, {
       method: 'GET',

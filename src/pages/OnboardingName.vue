@@ -6,7 +6,7 @@
         <p>Let's get to know each other 😄</p>
       </div>
       <div class="relative mt-6 mb-2 rounded-md shadow-sm max-w-md">
-        <input type="text" name="name" v-model="name" @blur="validateKey" v-on:input="validateKey" class="w-full" placeholder="Name"/>
+        <input type="text" name="name" v-model="name" @blur="validateName" v-on:input="validateName" class="w-full" placeholder="Name"/>
       </div>
       <button @click="goToNext()" :disabled="error || name === '' || loading" class="inline-flex items-center place-content-center">
         <svg v-if="loading" class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -19,27 +19,31 @@
   </div>
 </template>
 
-<script setup>
+<script>
 import { getFirestore, doc, setDoc } from 'firebase/firestore'
 import { getAuth, signInAnonymously, updateProfile } from "firebase/auth";
 import { getCurrentUser } from 'vuefire'
-</script>
 
-<script>
 export default {
   name: 'OnboardingName',
   data() {
     return {
-      // TODO: Move to component and pull name from user mode (if exists).
-      name: '',
+      // TODO: Move to component and pull name from logged in user (if exists).
       error: false,
       loading: false,
+      user: undefined,
+      name: undefined,
     }
   },
   beforeMount() {
+    getCurrentUser().then(user => {
+      this.user = user
+      this.name = user.displayName
+    })
   },
   methods: {
-    validateKey() {
+    validateName() {
+      // TODO: Field validation for name.
     },
     async updateName(user, name) {
       // Update name to user auth object.

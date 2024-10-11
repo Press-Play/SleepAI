@@ -9,20 +9,21 @@
   <p v-if="user">Logged in as {{ user.displayName }}</p>
 </template>
 
-<script setup>
-import { getAuth, signInWithPopup, signOut, GoogleAuthProvider } from 'firebase/auth'
-import { useCurrentUser } from 'vuefire'
-const user = useCurrentUser()
-</script>
-
 <script>
+import { getAuth, signInWithPopup, signOut, GoogleAuthProvider } from 'firebase/auth'
+import { getCurrentUser } from 'vuefire'
+
 export default {
   name: 'UserAuth',
   data() {
     return {
+      user: undefined,
     }
   },
   beforeMount() {
+    getCurrentUser().then(user => {
+      this.user = user
+    })
   },
   methods: {
     googleSignIn() {

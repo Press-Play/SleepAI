@@ -29,6 +29,7 @@ const router = createRouter({
 
 router.beforeEach(async (to, from) => {
   const user = await getCurrentUser()
+  console.log('user:', user)
   if (to.meta.isAnonymous && !user) {
     return { name: 'Forbidden' }
   }
