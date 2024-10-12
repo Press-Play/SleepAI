@@ -1,5 +1,5 @@
 import FetchWrapper from './api.js'
-import { setCookie, getCookie } from './cookies.js'
+import { setCookie, getCookie, eraseCookie } from './cookies.js'
 // import { getFirestore, doc, setDoc } from 'firebase/firestore'
 
 const FITBIT_BASE_URI = 'https://api.fitbit.com/'
@@ -23,6 +23,11 @@ export class FitbitAuth {
     return getCookie('fitbit_user_id')
   }
 
+  static clearTokens() {
+    eraseCookie('fitbit_access_token')
+    eraseCookie('fitbit_refresh_token')
+  }
+
   async requestAccessToken(authCode, codeVerifier) {
     const response = await this.api.post('token', {
       'client_id': process.env.VUE_APP_FITBIT_CLIENT_ID,
@@ -34,18 +39,32 @@ export class FitbitAuth {
     return response
   }
 
-  async refreshToken() {
+  async refreshAccessToken() {
+    const token = FitbitAuth.getRefreshToken()
+    if (!token) {
+      return new Error('No refresh token.')
+    }
     const response = await this.api.post('token', {
       'client_id': process.env.VUE_APP_FITBIT_CLIENT_ID,
       'grant_type': 'refresh_token',
-      'refresh_token': FitbitAuth.getRefreshToken(),
+      'refresh_token': token,
     })
     this.saveAuthentication(response)
     return response
   }
 
   async revokeTokens() {
-    // TODO: Implement, see https://dev.fitbit.com/build/reference/web-api/authorization/revoke-token/.
+    FitbitAuth.clearTokens()
+    const response = await this.api.post('revoke', {
+      'client_id': process.env.VUE_APP_FITBIT_CLIENT_ID,
+      'token': FitbitAuth.getAccessToken(),
+    })
+    await this.api.post('revoke', {
+      'client_id': process.env.VUE_APP_FITBIT_CLIENT_ID,
+      'token': FitbitAuth.getRefreshToken(),
+    })
+    this.saveAuthentication(response)
+    return response
   }
 
   async introspectToken(token) {
@@ -56,7 +75,7 @@ export class FitbitAuth {
     }).catch(() => {
       this.api.setBaseURI(oldURI)
       this.api.setAccessToken(oldToken)
-      return this.refreshToken()
+      return this.refreshAccessToken()
     })
     this.api.setBaseURI(oldURI)
     this.api.setAccessToken(oldToken)
@@ -90,8 +109,7 @@ export class FitbitAuthAPI extends FetchWrapper {
     return null
   }
 
-  async onError(error) {
-    console.log('Running onError() in FitbitAuthAPI with error:', error)
+  async onError() {
     return null
   }
 }
@@ -124,7 +142,7 @@ export class FitbitUserAPI extends FetchWrapper {
   async onError(error) {
     // If response is 401 Unauthorized, then refresh token.
     if (error.status === '401') {
-      return this.auth.refreshToken()
+      return this.auth.refreshAccessToken()
     }
   }
 }

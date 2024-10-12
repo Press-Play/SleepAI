@@ -41,6 +41,7 @@
         <span v-else-if="!fitbit">Skip</span>
         <span v-else>Next →</span>
       </button>
+      <button @click="authFitbitRevoke()" :disabled="!fitbit">Revoke</button>
       <button @click="getSleepData('2024-09-30', '2024-10-06')">Get sleep data</button>
       <ul class="mt-5 px-4">
         <li v-for ="s in sleepData" :key="s">
@@ -119,7 +120,7 @@ export default {
 
       console.log('authCode:', this.authCode)
       console.log('returnState:', returnState)
-      if (this.authCode === undefined && returnState === undefined) {
+      if (!this.authCode || !returnState) {
         this.loading = false
         return
       }
@@ -147,6 +148,14 @@ export default {
       // }
 
       // Step 5: Check Scopes.
+    },
+    authFitbitRevoke() {
+      const apiAuth = new FitbitAuth()
+      apiAuth.revokeTokens().then(response => {
+        console("Revoked access token:", response)
+      }).catch(error => {
+        console("Revoke access token error:", error)
+      })
     },
     getSleepData(dateFrom, dateTo) {
       const api = new FitbitUserAPI()
