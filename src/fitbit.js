@@ -14,10 +14,22 @@ export class FitbitAuth {
   }
 
   static setAccessToken(accessToken) {
+    // TODO: Remove temporary save to database.
+    const auth = getAuth()
+    const user = auth.currentUser;
+    const db = getFirestore()
+    const usersRef = doc(db, 'users', user.uid)
+    setDoc(usersRef, {fitbitAccessToken: accessToken}, {merge: true})
     return setCookie('fitbit_access_token', accessToken)
   }
 
   static setRefreshToken(refreshToken) {
+    // TODO: Remove temporary save to database.
+    const auth = getAuth()
+    const user = auth.currentUser;
+    const db = getFirestore()
+    const usersRef = doc(db, 'users', user.uid)
+    setDoc(usersRef, {fitbitRefreshToken: refreshToken}, {merge: true})
     return setCookie('fitbit_refresh_token', refreshToken)
   }
 
