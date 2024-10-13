@@ -1,6 +1,8 @@
 import FetchWrapper from './api.js'
 import { setCookie, getCookie, eraseCookie } from './cookies.js'
-// import { getFirestore, doc, setDoc } from 'firebase/firestore'
+import { getFirestore, doc, setDoc } from 'firebase/firestore'
+// import { getCurrentUser } from 'vuefire'
+import { getAuth } from "firebase/auth";
 
 const FITBIT_BASE_URI = 'https://api.fitbit.com/'
 const FITBIT_USER_URI = FITBIT_BASE_URI + '1.2/user/'
@@ -9,6 +11,23 @@ const FITBIT_OAUTH_URI = FITBIT_BASE_URI + 'oauth2/'
 export class FitbitAuth {
   constructor() {
     this.api = new FitbitAuthAPI(FITBIT_OAUTH_URI, FetchWrapper.CONTENT_TYPE_FORM_ENCODED)
+  }
+
+  static setAccessToken(accessToken) {
+    return setCookie('fitbit_access_token', accessToken)
+  }
+
+  static setRefreshToken(refreshToken) {
+    return setCookie('fitbit_refresh_token', refreshToken)
+  }
+
+  static setUserId(userId) {
+    const auth = getAuth()
+    const user = auth.currentUser;
+    const db = getFirestore()
+    const usersRef = doc(db, 'users', user.uid)
+    setDoc(usersRef, {fitbitUserId: userId}, {merge: true})
+    return setCookie('fitbit_user_id', userId)
   }
 
   static getAccessToken() {
@@ -21,11 +40,18 @@ export class FitbitAuth {
 
   static getUserId() {
     return getCookie('fitbit_user_id')
+    // TODO: Get userId from Firestore users collection.
   }
 
   static clearTokens() {
     eraseCookie('fitbit_access_token')
     eraseCookie('fitbit_refresh_token')
+  }
+
+  saveAuthentication(data) {
+    FitbitAuth.setAccessToken(data.access_token)
+    FitbitAuth.setRefreshToken(data.refresh_token)
+    FitbitAuth.setUserId(data.user_id)
   }
 
   async requestAccessToken(authCode, codeVerifier) {
@@ -68,8 +94,12 @@ export class FitbitAuth {
   }
 
   async introspectToken(token) {
+    const accessToken = FitbitAuth.getAccessToken()
+    if (!accessToken) {
+      return false
+    }
     const oldURI = this.api.setBaseURI(FITBIT_BASE_URI + '1.1/oauth2/')
-    const oldToken = this.api.setAccessToken(FitbitAuth.getAccessToken())
+    const oldToken = this.api.setAccessToken(accessToken)
     const response = await this.api.post('introspect', {
       'token': token
     }).catch(() => {
@@ -87,16 +117,6 @@ export class FitbitAuth {
     const accessToken = FitbitAuth.getAccessToken()
     const response = await this.introspectToken(accessToken)
     return response ? response.active : false
-  }
-
-  saveAuthentication(data) {
-    setCookie('fitbit_user_id', data.user_id)
-    setCookie('fitbit_access_token', data.access_token)
-    setCookie('fitbit_refresh_token', data.refresh_token)
-    // TODO: Save fitbit userId to Firestore users collection.
-    // const db = getFirestore()
-    // setDoc(doc(db, 'users', user.uid), {})
-
   }
 }
 

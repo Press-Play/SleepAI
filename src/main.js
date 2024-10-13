@@ -14,12 +14,13 @@ import FitbitAuthView from './pages/FitbitAuthentication.vue'
 import ForbiddenView from './pages/ForbiddenPage.vue'
 
 const routes = [
-  { path: '/', component: ProblemsView },
-  { path: '/reco', component: RecommendationsView },
+  { path: '/onboarding/questions', component: ProblemsView },
+  { path: '/', component: RecommendationsView },
   { path: '/auth', component: UserAuthView},
   { path: '/onboarding/name', component: OnboardingNameView },
   { path: '/onboarding/import', component: FitbitAuthView, meta: { isAnonymous: true } },
-  { path: '/forbidden', component: ForbiddenView, name: 'Forbidden' }
+  { path: '/forbidden', component: ForbiddenView, name: 'Forbidden' },
+  // TODO: { path: '/:pathMatch(.*)*', component: PathNotFound },
 ]
 
 const router = createRouter({
