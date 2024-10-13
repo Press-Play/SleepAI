@@ -45,7 +45,7 @@
       <button @click="getSleepData('2024-09-30', '2024-10-06')">Get sleep data</button>
       <ul class="mt-5 px-4">
         <li v-for ="s in sleepData" :key="s">
-          {{ s.dateOfSleep }}: Time in bed {{ minutesToHours(s.timeInBed) }}. Asleep for {{ minutesToHours(s.minutesAsleep) }}. Efficiency {{ calculateSleepEfficiency(s.minutesAsleep, s.timeInBed) }}
+          {{ s.dateOfSleep }}: Time in bed {{ minutesToHours(s.timeInBed) }}. Asleep for {{ minutesToHours(s.minutesAsleep) }}. Efficiency {{ calculateSleepEfficiency(s.minutesAsleep, s.timeInBed) }}. <span v-if="s.latency">Latency {{ s.latency }} mins.</span>
         </li>
       </ul>
     </div>
@@ -163,6 +163,16 @@ export default {
         .then(data => {
           console.log(data)
           this.sleepData = data.sleep
+
+          // Calculate and save sleep latency (minutes) to each sleep session.
+          for (let i = 0; i < this.sleepData.length; i++) {
+            for (let j = 0; j < this.sleepData[i].levels.data.length; j++) {
+              if (this.sleepData[i].levels.data[j].dateTime === this.sleepData[i].startTime && this.sleepData[i].levels.data[j].level === 'wake') {
+                this.sleepData[i].latency = this.sleepData[i].levels.data[j].seconds / 60
+                console.log('Latency for', this.sleepData[i].startTime, 'is:', this.sleepData[i].latency, 'minutes')
+              }
+            }
+          }
         })
     },
     calculateSleepEfficiency(opportunity, duration) {
