@@ -3,13 +3,13 @@
     <div class="flex flex-col flex-wrap align-center">
       <div class="px-12">
         <h2><span class="font-bold">{{ name }}</span>, consistency is the foundation of sleep</h2>
-        <p>Getting to bed at the same time helps to regulate your circadian rhythm.</p>
+        <p>Getting to bed at the same time is the <span class="font-bold">best</span> way to improve your sleep.</p>
       </div>
-      <h3 class="mt-6">What time do you need to wake up by?</h3>
+      <h3 class="mt-6">When do you need to wake up by?</h3>
       <!-- <p>Your current goal for sleep is {{ sleepDurationGoal }} hours per night.</p> -->
       <TimePicker :initialTime='timeWake' @get-time="handleGetTime"/>
-      <p>Based on your sleep data, your bedtime should be no later than {{ timeBed }}. Learn more.</p>
-      <button>
+      <p>Based on your sleep data, your bedtime should be no later than {{ timeBed }}.</p>
+      <button @click="goToNext()">
         <span>Next →</span>
       </button>
     </div>
@@ -33,7 +33,8 @@ export default {
       timeBed: undefined,
       timeWake: undefined,
       sleepDurationGoal: undefined,
-      sleepEfficiency: undefined,
+      // TODO: Need to calculate based on sleep data.
+      sleepEfficiency: 0.8,
     }
   },
   beforeMount() {
@@ -57,8 +58,6 @@ export default {
         console.log(error)
         // Set to defaults.
         this.sleepDurationGoal = 7
-        this.sleepEfficiency = 0.8
-        // this.timeBed = '10:15 PM'
         this.timeBed = this.time24To12('22:15')
         this.timeWake = '7:00 AM'
       })
@@ -72,7 +71,21 @@ export default {
       this.timeWake = t
       this.timeBed = moment(this.timeWake, 'hh:mm A').subtract(
         moment.duration(this.sleepDurationGoal / this.sleepEfficiency, 'hours'))
-      .format('hh:mm A')
+        .format('hh:mm A')
+      this.timeBed = this.roundUp15Minutes(this.timeBed)
+      console.log('this.timeWake:', this.timeWake)
+      console.log('this.timeBed:', this.timeBed)
+    },
+    roundUp15Minutes(t) {
+      const start = moment(t, 'hh:mm A');
+      const remainder = 15 - (start.minute() % 15);
+      const finish = moment(start)
+        .add(remainder, 'minutes')
+        .format('hh:mm A')
+      return finish
+    },
+    goToNext() {
+      this.$router.push('/')
     },
   },
 }

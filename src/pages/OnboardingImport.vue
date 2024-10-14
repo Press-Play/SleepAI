@@ -190,7 +190,7 @@ export default {
       if (!this.fitbit) {
         this.$router.push('/onboarding/questions')
       } else {
-        this.$router.push('/')
+        this.$router.push('/onboarding/goals')
       }
       this.loading = false
     },
