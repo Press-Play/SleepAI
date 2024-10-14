@@ -51,8 +51,13 @@ export class FitbitAuth {
   }
 
   static getUserId() {
-    return getCookie('fitbit_user_id')
     // TODO: Get userId from Firestore users collection.
+    // const auth = getAuth()
+    // const user = auth.currentUser;
+    // const db = getFirestore()
+    // const usersRef = doc(db, 'users', user.uid)
+    // getDoc(usersRef)
+    return getCookie('fitbit_user_id')
   }
 
   static clearTokens() {
@@ -176,5 +181,9 @@ export class FitbitUserAPI extends FetchWrapper {
     if (error.status === '401') {
       return this.auth.refreshAccessToken()
     }
+  }
+
+  async getSleepGoal() {
+    return this.get('sleep/goal.json')
   }
 }

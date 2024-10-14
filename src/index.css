@@ -42,6 +42,12 @@
   input {
     @apply rounded-md border-0 py-1.5 px-3 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-teal-400 active:ring-1 active:ring-inset active:ring-teal-400 focus-visible:outline-none;
   }
+  select {
+    -webkit-appearance: none;
+  }
+  select::-ms-expand {
+    display: none;
+  }
 }
 
 @layer components {

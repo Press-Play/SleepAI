@@ -1,7 +1,7 @@
 <template>
   <div class="relative mt-20 mb-20 max-w-screen-sm left-1/2 -translate-x-1/2">
     <div class="px-12">
-      <h2><span class="font-bold">Khanh</span>, X</h2>
+      <h2><span class="font-bold">{{ name }}</span>, X</h2>
       <p>Lorum ipsum.</p>
     </div>
     <div class="flex flex-row gap-4 items-center m-4 p-4 rounded-lg bg-gray-100 text-left">
@@ -29,18 +29,27 @@
 </template>
 
 <script>
+import { getCurrentUser } from 'vuefire'
+
 export default {
   name: 'ProblemSelection',
   data() {
     return {
       sleepProfileProblems: "",
+      name: undefined,
     }
   },
   beforeMount() {
+    this.name = this.getName()
     if (localStorage.getItem("sleepProfileProblems") !== null) {
       this.sleepProfileProblems = JSON.parse(localStorage.getItem("sleepProfileProblems"))
     }
   },
-  methods: {},
+  methods: {
+    async getName() {
+      const user = await getCurrentUser()
+      this.name = user.displayName
+    }
+  },
 }
 </script>

@@ -2,7 +2,7 @@
   <div class="relative mt-20 mb-20 max-w-screen-sm left-1/2 -translate-x-1/2">
     <div class="flex flex-col flex-wrap content-center">
       <div class="px-12">
-        <h2>Connect your sleep data</h2>
+        <h2><span class="font-bold">{{ name }}</span>, connect your sleep data</h2>
         <p>This helps you get the best personalised recommendations 😇</p>
       </div>
       <button @click="authFitbitRequest()" :disabled="loading || fitbit" class="inline-flex items-center place-content-center">
@@ -41,25 +41,27 @@
         <span v-else-if="!fitbit">Skip</span>
         <span v-else>Next →</span>
       </button>
-      <button @click="authFitbitRevoke()" :disabled="!fitbit">Revoke</button>
+     <!--  <button @click="authFitbitRevoke()" :disabled="!fitbit">Revoke</button>
       <button @click="getSleepData('2024-09-30', '2024-10-06')">Get sleep data</button>
       <ul class="mt-5 px-4">
         <li v-for ="s in sleepData" :key="s">
           {{ s.dateOfSleep }}: Time in bed {{ minutesToHours(s.timeInBed) }}. Asleep for {{ minutesToHours(s.minutesAsleep) }}. Efficiency {{ calculateSleepEfficiency(s.minutesAsleep, s.timeInBed) }}. <span v-if="s.latency">Latency {{ s.latency }} mins.</span>
         </li>
-      </ul>
+      </ul> -->
     </div>
   </div>
 </template>
 
 <script>
 import { FitbitAuth, FitbitUserAPI } from '../fitbit.js'
+import { getCurrentUser } from 'vuefire'
 
 // TODO: Extract out Fitbit auth into component.
 export default {
   name: 'FitbitAuthentication',
   data() {
     return {
+      name: undefined,
       codeVerifier: undefined,
       authCode: undefined,
       sleepData: [],
@@ -112,6 +114,8 @@ export default {
     async authFitbitResponse() {
       const apiAuth = new FitbitAuth()
       this.loading = true
+      const user = await getCurrentUser()
+      this.name = user.displayName
       this.fitbit = await apiAuth.isConnected()
 
       // Step 3: Handle the Redirect
@@ -183,8 +187,12 @@ export default {
     },
     goToNext() {
       this.loading = true
-      // this.$router.push('/nextPage')
-      // this.loading = false
+      if (!this.fitbit) {
+        this.$router.push('/onboarding/questions')
+      } else {
+        this.$router.push('/')
+      }
+      this.loading = false
     },
   },
 }

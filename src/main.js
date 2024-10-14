@@ -6,19 +6,21 @@ import { createWebHistory, createRouter } from 'vue-router'
 import { VueFire, VueFireAuth, getCurrentUser } from 'vuefire'
 import { getFirebaseApp } from './firebase'
 
-import ProblemsView from './pages/ProblemSelection.vue'
-import RecommendationsView from './pages/SleepRecommendation.vue'
+import HomePageView from './pages/HomePage.vue'
 import UserAuthView from './pages/UserAuth.vue'
 import OnboardingNameView from './pages/OnboardingName.vue'
-import FitbitAuthView from './pages/FitbitAuthentication.vue'
+import OnboardingImportView from './pages/OnboardingImport.vue'
+import OnboardingQuestionsView from './pages/OnboardingQuestions.vue'
+import OnboardingGoalsView from './pages/OnboardingGoals.vue'
 import ForbiddenView from './pages/ForbiddenPage.vue'
 
 const routes = [
-  { path: '/onboarding/questions', component: ProblemsView },
-  { path: '/', component: RecommendationsView },
-  { path: '/auth', component: UserAuthView},
-  { path: '/onboarding/name', component: OnboardingNameView },
-  { path: '/onboarding/import', component: FitbitAuthView, meta: { isAnonymous: true } },
+  { path: '/', component: HomePageView, meta: { isAnonymous: true } },
+  { path: '/auth', component: UserAuthView },
+  { path: '/onboarding/name', component: OnboardingNameView, name: 'Start Onboarding' },
+  { path: '/onboarding/import', component: OnboardingImportView, meta: { isAnonymous: true } },
+  { path: '/onboarding/questions', component: OnboardingQuestionsView, meta: { isAnonymous: true } },
+  { path: '/onboarding/goals', component: OnboardingGoalsView, meta: { isAnonymous: true } },
   { path: '/forbidden', component: ForbiddenView, name: 'Forbidden' },
   // TODO: { path: '/:pathMatch(.*)*', component: PathNotFound },
 ]
@@ -32,7 +34,11 @@ router.beforeEach(async (to, from) => {
   const user = await getCurrentUser()
   console.log('user:', user)
   if (to.meta.isAnonymous && !user) {
-    return { name: 'Forbidden' }
+    if (to.path === '/') {
+      return { name: 'Start Onboarding'}
+    } else {
+      return { name: 'Forbidden' }
+    }
   }
   console.log('to:', to)
   console.log('from:', from)
