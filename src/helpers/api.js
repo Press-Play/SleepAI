@@ -46,7 +46,7 @@ export default class FetchWrapper {
     return oldToken
   }
 
-  async get(path, tries = 1, delay = 500) {
+  async get(path, tries = 2, delay = 500) {
     const response = await this.call(`${this.baseURI}${path}`, {
       method: 'GET',
       headers: {
@@ -56,7 +56,7 @@ export default class FetchWrapper {
     return response
   }
 
-  async put(path, data, tries = 1, delay = 500) {
+  async put(path, data, tries = 2, delay = 500) {
     const response = await this.call(`${this.baseURI}${path}`, {
       method: 'PUT',
       body: this.prepareBody(data),
@@ -68,7 +68,7 @@ export default class FetchWrapper {
     return response
   }
 
-  async post(path, data, tries = 1, delay = 500) {
+  async post(path, data, tries = 2, delay = 500) {
     const response = await this.call(`${this.baseURI}${path}`, {
       method: 'POST',
       body: this.prepareBody(data),
@@ -80,7 +80,7 @@ export default class FetchWrapper {
     return response
   }
 
-  async delete(path, tries = 1, delay = 500) {
+  async delete(path, tries = 2, delay = 500) {
     const response = await this.call(`${this.baseURI}${path}`, {
       method: 'DELETE',
       headers: {
@@ -90,7 +90,7 @@ export default class FetchWrapper {
     return response
   }
 
-  async call(url, options = {}, tries = 1, delay = 500) {
+  async call(url, options = {}, tries = 2, delay = 500) {
     const response = await fetch(url, options)
       .then(response => {
         if (!response.ok) {
@@ -103,8 +103,6 @@ export default class FetchWrapper {
       })
       .catch(err => {
         this.onError(err).then(() => {
-          tries++
-
           // Retry the call.
           const triesLeft = tries - 1
           if (!triesLeft) {
