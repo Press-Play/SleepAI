@@ -18,8 +18,8 @@
 
 <script>
 import { getCurrentUser } from 'vuefire'
-import { FitbitUserAPI } from '../fitbit.js'
-import TimePicker from '../components/TimePicker.vue'
+import { FitbitUserAPI } from '@/helpers/fitbit.js'
+import TimePicker from '@/components/TimePicker.vue'
 import moment from 'moment';
 
 export default {

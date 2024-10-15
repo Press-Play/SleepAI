@@ -53,7 +53,7 @@
 </template>
 
 <script>
-import { FitbitAuth, FitbitUserAPI } from '../fitbit.js'
+import { FitbitAuth, FitbitUserAPI } from '@/helpers/fitbit.js'
 import { getCurrentUser } from 'vuefire'
 
 // TODO: Extract out Fitbit auth into component.
