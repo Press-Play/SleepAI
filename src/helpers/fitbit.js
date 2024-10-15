@@ -178,12 +178,20 @@ export class FitbitUserAPI extends FetchWrapper {
 
   async onError(error) {
     // If response is 401 Unauthorized, then refresh token.
-    if (error.status === '401') {
-      return this.auth.refreshAccessToken()
-    }
+    // if (error.status === '401') {
+    console.log(error)
+    return this.auth.refreshAccessToken()
+    // }
   }
 
   async getSleepGoal() {
     return this.get('sleep/goal.json')
+  }
+
+  async getSleepLogList(dateFrom, dateTo) {
+    return this.get('sleep/date/' + dateFrom + '/' + dateTo +'.json')
+      .then(data => {
+        return data.sleep
+      })
   }
 }

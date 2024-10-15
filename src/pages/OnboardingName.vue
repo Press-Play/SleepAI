@@ -23,6 +23,7 @@
 import { getFirestore, doc, setDoc } from 'firebase/firestore'
 import { getAuth, signInAnonymously, updateProfile } from "firebase/auth";
 import { getCurrentUser } from 'vuefire'
+import User from '@/models/user'
 
 export default {
   name: 'OnboardingName',
@@ -39,6 +40,12 @@ export default {
     getCurrentUser().then(user => {
       this.user = user
       this.name = user.displayName
+      //------------
+      const userModel = new User(user.uid)
+      console.log('userModel:', userModel)
+      console.log('userModel.name:', userModel.name)
+      console.log('userModel.id:', userModel.id)
+      //------------
     })
   },
   methods: {
@@ -59,6 +66,7 @@ export default {
 
       // See if a current user is logged in, otherwise create anon user.
       let user = await getCurrentUser()
+
       if (!user) {
         console.log('No user is logged in, creating one')
         signInAnonymously(auth)

@@ -102,16 +102,16 @@ export default class FetchWrapper {
         return response.json()
       })
       .catch(err => {
-        this.onError(err).then(errorResponse => {
-          return errorResponse
-        })
+        this.onError(err).then(() => {
+          tries++
 
-        // Retry the call.
-        const triesLeft = tries - 1
-        if (!triesLeft) {
-          throw err
-        }
-        return this.wait(delay).then(() => this.call(url, options, delay, triesLeft))
+          // Retry the call.
+          const triesLeft = tries - 1
+          if (!triesLeft) {
+            throw err
+          }
+          return this.wait(delay).then(() => this.call(url, options, delay, triesLeft))
+        })
       })
     return response
   }
