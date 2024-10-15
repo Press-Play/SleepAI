@@ -18,7 +18,9 @@ export default {
   data() {
     return {
       score: undefined,
+      // TODO: Default to today - 7 days.
       dateFrom: this.initialDateFrom,
+      // TODO: Default to today.
       dateTo: this.initialDateTo,
     }
   },
