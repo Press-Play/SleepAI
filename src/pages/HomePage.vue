@@ -6,7 +6,7 @@
     </div>
     <div>
       <h3>Past 7 days</h3>
-      <div class="flex flex-row gap-4 m-4 justify-center">
+      <div class="flex flex-row gap-8 m-4 justify-center">
         <MetricSleepConsistency
           :initialDateFrom='dateFrom'
           :initialDateTo='dateTo'

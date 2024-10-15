@@ -1,13 +1,14 @@
 <template>
-  <div>
-    <div>ICON</div>
-    <div>{{ formatScore(score) }}</div>
-    <div>CONSISTENCY</div>
-  </div>
+  <MetricCircle
+    :value='score'
+    :icon='icon'
+    :label='label'
+  />
 </template>
 
 <script>
 import User from '@/models/user'
+import MetricCircle from '@/components/MetricCircle'
 
 export default {
   name: 'MetricSleepConsistency',
@@ -15,9 +16,14 @@ export default {
     initialDateFrom: String,
     initialDateTo: String,
   },
+  components: {
+    MetricCircle
+  },
   data() {
     return {
       score: undefined,
+      icon: '💤',
+      label: 'Consistency',
       // TODO: Default to today - 7 days.
       dateFrom: this.initialDateFrom,
       // TODO: Default to today.
@@ -33,7 +39,8 @@ export default {
           return user.getMetricSleepConsistency(this.dateFrom, this.dateTo)
         }).then(consistency => {
           console.log('consistency:', consistency)
-          this.score = consistency.score
+          this.score = consistency.score * 100
+          console.log('this.score', this.score)
         })
 
     } catch(e) {
@@ -41,6 +48,7 @@ export default {
     }
   },
   methods: {
+    // TODO: Probably remove this and do formatting in MetricCircle.
     formatScore(s) {
       if (!s) {
         return 'Loading...'
