@@ -98,6 +98,7 @@ export default {
       return finish
     },
     goToNext() {
+      // TODO: Save goal, but set as inactive.
       this.$router.push('/')
     },
   },

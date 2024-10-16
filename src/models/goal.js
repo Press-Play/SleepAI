@@ -58,7 +58,8 @@ export default class Goal {
   }
 
   // static async save() {
-
+  //   TODO: Save new goals to database and set to active.
+  //   TODO: Sync goals from database to Fitbit?
   // }
 
   static async syncFitbit() {

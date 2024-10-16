@@ -71,7 +71,8 @@ export default class User {
     return await Goal.load()
   }
 
-  async getMetricSleepConsistency(dateFrom, dateTo) {
+  async getSleepConsistencyScore(dateFrom, dateTo) {
+    // TODO: Fix this for when there are no saved sleep goal by setting inactive sleep goal.
     // TODO: Get these from the database instead of Fitbit API.
     // Query sleep goals to get targetBedTime and targetWakeTime.
     const sleepGoal = await this.getSleepGoal()

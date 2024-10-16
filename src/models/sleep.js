@@ -95,10 +95,6 @@ export default class Sleep {
     return sleep
   }
 
-  // static async getUserSleep(uuid, date) {
-
-  // }
-
   static async getUserSleepLatest() {
     const user = await User.getCurrentUser()
     console.log('Getting latest sleep data for user:', user.id)
@@ -113,7 +109,29 @@ export default class Sleep {
     return result
   }
 
+  static async getSleeps(dateFrom, dateTo) {
+    const user = await User.getCurrentUser()
+    console.log('Getting latest sleep data for user:', user.id)
+    const ref = collection(getFirestore(), 'sleeps').withConverter(Sleep.getFirestoreConverter())
+    const userRef = doc(getFirestore(), 'users', user.id)
+    const q = query(
+      ref,
+      where('uuid', '==', userRef),
+      where('date', '>=', new Date(dateFrom)),
+      where('date', '<=', new Date(dateTo)),
+      orderBy('date', 'desc'),
+    )
+    const snap = await getDocs(q)
+    let result = []
+    snap.forEach((doc) => {
+      result.push(doc.data())
+    })
+    console.log('getSleeps():', result)
+    return result
+  }
+
   // static async saveSleepGoal() {
+  //   TODO: Call the Goal model to save.
   // }
 
   static async syncFitbit(dateFrom) {

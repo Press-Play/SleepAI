@@ -21,7 +21,7 @@
         />
       </div>
     </div>
-    <!-- Only show if goal is active -->
+    <!-- TODO: Only show if goal is active -->
 <!--     <div class="flex flex-row gap-4 items-center m-4 p-4 rounded-lg bg-green-100 text-left">
       <div class="text-2xl pt-2">🎯</div>
       <div>
@@ -52,6 +52,9 @@
         </div>
       </div>
     </div>
+
+
+    <button @click="getSleeps()" class="mb-10">Get sleeps</button>
   </div>
   <div class="fixed inset-x-0 bottom-0 w-full max-w-screen-sm left-1/2 -translate-x-1/2 px-4">
     <div class="flex flex-row justify-between px-8 pt-4 pb-8 rounded-t-3xl bg-gray-100 cursor-pointer">
@@ -63,6 +66,7 @@
 
 <script>
 import { getCurrentUser } from 'vuefire'
+import Sleep from '@/models/sleep'
 import MetricSleepConsistency from '@/components/MetricSleepConsistency'
 
 export default {
@@ -88,6 +92,9 @@ export default {
     async getName() {
       const user = await getCurrentUser()
       this.name = user.displayName
+    },
+    async getSleeps() {
+      return await Sleep.getSleeps('2024-10-01', '2024-10-17')
     }
   },
 }

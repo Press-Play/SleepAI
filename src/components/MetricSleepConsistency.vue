@@ -36,7 +36,7 @@ export default {
       User.getCurrentUser()
         .then(user => {
           // Query their consistency score for the past 7 days.
-          return user.getMetricSleepConsistency(this.dateFrom, this.dateTo)
+          return user.getSleepConsistencyScore(this.dateFrom, this.dateTo)
         }).then(consistency => {
           console.log('consistency:', consistency)
           this.score = consistency.score * 100
