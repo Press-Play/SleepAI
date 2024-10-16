@@ -18,8 +18,9 @@
 
 <script>
 import { getCurrentUser } from 'vuefire'
-import { FitbitUserAPI } from '@/helpers/fitbit'
 import TimePicker from '@/components/TimePicker'
+import User from "@/models/user"
+import Goal from "@/models/goal"
 import moment from 'moment';
 
 export default {
@@ -47,14 +48,30 @@ export default {
       this.name = user.displayName
     },
     getSleepGoal() {
-      const api = new FitbitUserAPI()
-      api.getSleepGoal().then(data => {
-        console.log('sleepGoal:', data)
-        this.sleepDurationGoal = (data.goal.minDuration / 60) || 7
-        this.timeBed = this.time24To12(data.goal.bedtime) || this.time24To12('22:15')
-        this.timeWake = this.time24To12(data.goal.wakeupTime) || '7:00 AM'
-        return data
-      })
+      User.getCurrentUser()
+        .then(user => {
+          Goal.syncFitbit()
+            .then(() => {
+              return
+            })
+          return user
+        })
+        .then(user => {
+          return user.getSleepGoal()
+        })
+        .then(goal => {
+          console.log('sleepGoal:', goal)
+          if (goal) {
+            this.sleepDurationGoal = goal.targetDuration
+            this.timeBed = this.time24To12(goal.targetTimeBed)
+            this.timeWake = this.time24To12(goal.targetTimeWake)
+          } else {
+            // Set defaults.
+            this.sleepDurationGoal =7
+            this.timeBed = this.time24To12('22:15')
+            this.timeWake = '7:00 AM'
+          }
+        })
     },
     time24To12(t) {
       if (!t) {

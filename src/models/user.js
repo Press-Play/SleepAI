@@ -2,6 +2,7 @@ import { getFirestore, doc, getDoc, setDoc } from 'firebase/firestore'
 import { getAuth } from "firebase/auth"
 import { FitbitUserAPI } from '@/helpers/fitbit'
 import Sleep from '@/models/sleep'
+import Goal from '@/models/goal'
 import moment from 'moment'
 
 export default class User {
@@ -59,20 +60,15 @@ export default class User {
 
   async syncFitbit() {
     // TODO: Update this to be 2 weeks before sign up date.
-    return await Sleep.syncFitbit('2024-10-01')
+    // Both of these functions don't return anything except a promise each.
+    return Sleep.syncFitbit('2024-10-01')
+      .then(() => {
+        return Goal.syncFitbit()
+      })
   }
 
   async getSleepGoal() {
-    // TODO: Get sleep goal from database if exists.
-    return this._apiFitbit.getSleepGoal()
-      .then(data => {
-        // Target times are formatted as HH:mm (24-hour time).
-        return {
-          targetBedTime: data.goal.bedtime,
-          targetWakeTime: data.goal.wakeupTime,
-          targetSleepDuration: data.goal.minDuration / 60,
-        }
-      })
+    return await Goal.load()
   }
 
   async getMetricSleepConsistency(dateFrom, dateTo) {
