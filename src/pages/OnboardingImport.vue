@@ -41,8 +41,7 @@
         <span v-else-if="!fitbit">Skip</span>
         <span v-else>Next →</span>
       </button>
-      <button @click="authFitbitRevoke()" :disabled="!fitbit">Revoke</button>
-      <button @click='syncFitbit()'>Sync Fitbit sleep data</button>
+      <!-- <button @click="authFitbitRevoke()" :disabled="!fitbit">Revoke</button> -->
     </div>
   </div>
 </template>
@@ -138,6 +137,13 @@ export default {
       })
       .then(connected => {
         this.fitbit = connected
+        return User.getCurrentUser()
+      })
+      .then(user => {
+        return user.syncFitbit()
+      })
+      .then(data => {
+        return data
       })
       .catch(err => {
         throw err;
@@ -156,17 +162,6 @@ export default {
       }).catch(error => {
         console("Revoke access token error:", error)
       })
-    },
-    // TODO: Move the to be called as soon as Fitbit is authenticated.
-    syncFitbit() {
-      // syncFitbit
-      return User.getCurrentUser()
-        .then(user => {
-          return user.syncFitbit()
-        })
-        .then(data => {
-          return data
-        })
     },
     goToNext() {
       this.loading = true
