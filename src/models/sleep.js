@@ -5,7 +5,7 @@ import moment from 'moment'
 
 // TODO: Write functions to get calculated fields: latency, consistency.
 export default class Sleep {
-  constructor (
+  constructor(
     id,
     uuid,
     date,
@@ -69,9 +69,7 @@ export default class Sleep {
   }
 
   get latency() {
-    // Get the stage data for when this.timeStart === this.breakdown.data[x]
-    // And this.data.breakdown.data[x].stage === 'wake'
-    // Return minutes (seconds / 60)
+    // Get the first sleep stage and return as latency (minutes) if is it a 'wake stage'.
     for (const period of this.breakdown.data) {
       if (this.timeStart.getTime() === period.time.getTime() && period.stage === 'wake') {
         return period.seconds / 60
@@ -82,7 +80,9 @@ export default class Sleep {
   }
 
   get consistency() {
-    // TODO
+    // TODO: Get the absolute difference between target and actual for both bed time and wake time.
+    // this.timeStart.getTime()
+    // TODO: Sum them together, normalise, and flip to create a percentage score.
     return null
   }
 
@@ -140,9 +140,6 @@ export default class Sleep {
       }
       await addDoc(ref, mapped)
     }
-
-    // TODO: Save sleep goal to database if it doesn't exist.
-
   }
 
   static async mapFitbitSleepLog(log) {

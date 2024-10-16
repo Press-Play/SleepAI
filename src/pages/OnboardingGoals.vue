@@ -50,22 +50,18 @@ export default {
       const api = new FitbitUserAPI()
       api.getSleepGoal().then(data => {
         console.log('sleepGoal:', data)
-        this.sleepDurationGoal = data.goal.minDuration / 60
-        this.timeBed = this.time24To12(data.goal.bedtime)
-        this.timeWake = this.time24To12(data.goal.wakeupTime)
+        this.sleepDurationGoal = (data.goal.minDuration / 60) || 7
+        this.timeBed = this.time24To12(data.goal.bedtime) || this.time24To12('22:15')
+        this.timeWake = this.time24To12(data.goal.wakeupTime) || '7:00 AM'
         return data
-      }).catch(error => {
-        console.log(error)
-        // Set to defaults.
-        this.sleepDurationGoal = 7
-        this.timeBed = this.time24To12('22:15')
-        this.timeWake = '7:00 AM'
       })
     },
     time24To12(t) {
-      // const hour = t.split(':')[0]
-      // return hour > 12 ? hour + ':' + t.split(':')[1] + ' PM' : t + ' AM'
-      return moment(t, 'HH:mm').format('hh:mm A')
+      if (!t) {
+        return null
+      } else {
+        return moment(t, 'HH:mm').format('hh:mm A')
+      }
     },
     handleGetTime(t) {
       this.timeWake = t
