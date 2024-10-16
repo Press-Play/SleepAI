@@ -42,19 +42,13 @@
         <span v-else>Next →</span>
       </button>
       <button @click="authFitbitRevoke()" :disabled="!fitbit">Revoke</button>
-      <button @click="getSleepData('2024-09-30', '2024-10-06')">Get sleep data</button>
-      <ul class="mt-5 px-4">
-        <li v-for ="s in sleepData" :key="s">
-          {{ s.dateOfSleep }}: Time in bed {{ minutesToHours(s.timeInBed) }}. Asleep for {{ minutesToHours(s.minutesAsleep) }}. Efficiency {{ calculateSleepEfficiency(s.minutesAsleep, s.timeInBed) }}. <span v-if="s.latency">Latency {{ s.latency }} mins.</span>
-        </li>
-      </ul>
       <button @click='syncFitbit()'>Sync Fitbit sleep data</button>
     </div>
   </div>
 </template>
 
 <script>
-import { FitbitAuth, FitbitUserAPI } from '@/helpers/fitbit'
+import { FitbitAuth } from '@/helpers/fitbit'
 import User from '@/models/user'
 import { getCurrentUser } from 'vuefire'
 
@@ -163,24 +157,7 @@ export default {
         console("Revoke access token error:", error)
       })
     },
-    getSleepData(dateFrom, dateTo) {
-      const api = new FitbitUserAPI()
-      api.get('sleep/date/' + dateFrom + '/' + dateTo +'.json')
-        .then(data => {
-          console.log(data)
-          this.sleepData = data.sleep
-
-          // Calculate and save sleep latency (minutes) to each sleep session.
-          for (let i = 0; i < this.sleepData.length; i++) {
-            for (let j = 0; j < this.sleepData[i].levels.data.length; j++) {
-              if (this.sleepData[i].levels.data[j].dateTime === this.sleepData[i].startTime && this.sleepData[i].levels.data[j].level === 'wake') {
-                this.sleepData[i].latency = this.sleepData[i].levels.data[j].seconds / 60
-                console.log('Latency for', this.sleepData[i].startTime, 'is:', this.sleepData[i].latency, 'minutes')
-              }
-            }
-          }
-        })
-    },
+    // TODO: Move the to be called as soon as Fitbit is authenticated.
     syncFitbit() {
       // syncFitbit
       return User.getCurrentUser()
@@ -190,12 +167,6 @@ export default {
         .then(data => {
           return data
         })
-    },
-    calculateSleepEfficiency(opportunity, duration) {
-      return Math.round(opportunity / duration * 100).toString() + '%'
-    },
-    minutesToHours(minutes) {
-      return Math.floor(minutes / 60).toString() + 'hrs ' + Math.round(minutes / 60 % 1 * 60).toString() + 'mins'
     },
     goToNext() {
       this.loading = true

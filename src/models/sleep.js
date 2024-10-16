@@ -1,4 +1,4 @@
-import { getFirestore, collection, doc, addDoc, getDoc, getDocs, query, where, orderBy, limit, Timestamp } from 'firebase/firestore'
+import { getFirestore, collection, doc, addDoc, getDoc, getDocs, query, where, orderBy, limit } from 'firebase/firestore'
 import { FitbitUserAPI } from '@/helpers/fitbit'
 import User from "@/models/user"
 import moment from 'moment'
@@ -32,9 +32,9 @@ export default class Sleep {
         return {
           id: sleep.id,
           uuid: doc(getFirestore(), 'users', sleep.uuid),
-          date: Timestamp.fromDate(sleep.date),
-          timeStart: Timestamp.fromDate(sleep.timeStart),
-          timeEnd: Timestamp.fromDate(sleep.timeEnd),
+          date: sleep.date,
+          timeStart: sleep.timeStart,
+          timeEnd: sleep.timeEnd,
           main: sleep.main,
           duration: sleep.duration,
           breakdown: sleep.breakdown,
@@ -42,6 +42,7 @@ export default class Sleep {
       },
       fromFirestore: (snapshot, options) => {
         const data = snapshot.data(options)
+        data.breakdown.data.map((period) => period.time = period.time.toDate())
 
         return new Sleep(
           snapshot.id,
@@ -67,6 +68,24 @@ export default class Sleep {
     return (this.duration / this.opportunity).toFixed(2)
   }
 
+  get latency() {
+    // Get the stage data for when this.timeStart === this.breakdown.data[x]
+    // And this.data.breakdown.data[x].stage === 'wake'
+    // Return minutes (seconds / 60)
+    for (const period of this.breakdown.data) {
+      if (this.timeStart.getTime() === period.time.getTime() && period.stage === 'wake') {
+        return period.seconds / 60
+      }
+    }
+    // If the first sleep stage recorded is not 'wake', then latency is 0.
+    return 0
+  }
+
+  get consistency() {
+    // TODO
+    return null
+  }
+
   static async getSleep(id) {
     // If an id is given, get sleep log from the database.
     // If no id is given, create a new sleep log instance to be saved.
@@ -89,12 +108,13 @@ export default class Sleep {
     const snap = await getDocs(q)
     let result = null
     snap.forEach((doc) => {
-      // doc.data() is never undefined for query doc snapshots
-      console.log(doc.id, " => ", doc.data())
       result = doc.data()
     })
     return result
   }
+
+  // static async saveSleepGoal() {
+  // }
 
   static async syncFitbit(dateFrom) {
     // Get latest sleep date from database.
@@ -120,6 +140,9 @@ export default class Sleep {
       }
       await addDoc(ref, mapped)
     }
+
+    // TODO: Save sleep goal to database if it doesn't exist.
+
   }
 
   static async mapFitbitSleepLog(log) {
@@ -131,8 +154,7 @@ export default class Sleep {
         minutesDeep: log.levels.summary.deep ? log.levels.summary.deep.minutes : 0,
         minutesREM: log.levels.summary.rem ? log.levels.summary.rem.minutes : 0,
       },
-      // TODO: Add sleep stage data here.
-      // data: {},
+      data: Sleep.mapFitbitSleepLogLevelsData(log.levels.data),
     }
     console.log('breakdown:', breakdown)
     const user = await User.getCurrentUser()
@@ -146,5 +168,17 @@ export default class Sleep {
       log.minutesAsleep,
       breakdown,
     )
+  }
+
+  static mapFitbitSleepLogLevelsData(data) {
+    let result = []
+    for (const level of data) {
+      result.push({
+        time: new Date(level.dateTime),
+        stage: level.level,
+        seconds: level.seconds,
+      })
+    }
+    return result
   }
 }
