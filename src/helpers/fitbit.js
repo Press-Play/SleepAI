@@ -188,8 +188,16 @@ export class FitbitUserAPI extends FetchWrapper {
     return this.get('sleep/goal.json')
   }
 
-  async getSleepLogList(dateFrom, dateTo) {
+  async getSleepLogDates(dateFrom, dateTo) {
     return this.get('sleep/date/' + dateFrom + '/' + dateTo +'.json')
+      .then(data => {
+        return data.sleep
+      })
+  }
+
+  async getSleepLogList(dateFrom) {
+    const params = '?afterDate=' + dateFrom + '&sort=asc&limit=100&offset=0'
+    return this.get('sleep/list.json' + params)
       .then(data => {
         return data.sleep
       })

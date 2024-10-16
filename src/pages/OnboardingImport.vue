@@ -41,19 +41,21 @@
         <span v-else-if="!fitbit">Skip</span>
         <span v-else>Next →</span>
       </button>
-     <!--  <button @click="authFitbitRevoke()" :disabled="!fitbit">Revoke</button>
+      <button @click="authFitbitRevoke()" :disabled="!fitbit">Revoke</button>
       <button @click="getSleepData('2024-09-30', '2024-10-06')">Get sleep data</button>
       <ul class="mt-5 px-4">
         <li v-for ="s in sleepData" :key="s">
           {{ s.dateOfSleep }}: Time in bed {{ minutesToHours(s.timeInBed) }}. Asleep for {{ minutesToHours(s.minutesAsleep) }}. Efficiency {{ calculateSleepEfficiency(s.minutesAsleep, s.timeInBed) }}. <span v-if="s.latency">Latency {{ s.latency }} mins.</span>
         </li>
-      </ul> -->
+      </ul>
+      <button @click='syncFitbit()'>Sync Fitbit sleep data</button>
     </div>
   </div>
 </template>
 
 <script>
 import { FitbitAuth, FitbitUserAPI } from '@/helpers/fitbit'
+import User from '@/models/user'
 import { getCurrentUser } from 'vuefire'
 
 // TODO: Extract out Fitbit auth into component.
@@ -177,6 +179,18 @@ export default {
               }
             }
           }
+        })
+    },
+    syncFitbit() {
+      // syncFitbit
+      return User.getCurrentUser()
+        .then(user => {
+          console.log('user:', user)
+          return user.syncFitbit()
+        })
+        .then(data => {
+          console.log('data:', data)
+          return data
         })
     },
     calculateSleepEfficiency(opportunity, duration) {

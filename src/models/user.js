@@ -1,6 +1,7 @@
 import { getFirestore, doc, getDoc, setDoc } from 'firebase/firestore'
 import { getAuth } from "firebase/auth"
 import { FitbitUserAPI } from '@/helpers/fitbit'
+import Sleep from '@/models/sleep'
 import moment from 'moment'
 
 export default class User {
@@ -56,6 +57,21 @@ export default class User {
     return setDoc(this._ref, this, {merge: true})
   }
 
+  async syncFitbit() {
+    // Get latest sleep date from database.
+    const latest = await Sleep.getUserSleepLatest(this.id)
+
+    // If there is no sleeps available, sync the last 2 weeks before sign up
+    // until today. Otherwise, query Fitbit for sleep log list from that date
+    // until today.
+    if (!latest) {
+      console.log('latest:', latest)
+      await Sleep.syncFitbit('2024-10-01')
+    }
+
+    // Save it to database.
+  }
+
   async getSleepGoal() {
     // TODO: Get sleep goal from database if exists.
     return this._apiFitbit.getSleepGoal()
@@ -75,7 +91,7 @@ export default class User {
     const sleepGoal = await this.getSleepGoal()
 
     // Query sleep data for the user over the date range.
-    return this._apiFitbit.getSleepLogList(dateFrom, dateTo)
+    return this._apiFitbit.getSleepLogDates(dateFrom, dateTo)
       .then(data => {
         console.log(dateFrom, dateTo)
         console.log('sleepGoal:', sleepGoal)
@@ -111,16 +127,12 @@ export default class User {
         // console.log('diffWake:', diffWake)
         // console.log('sum:', sum)
         // console.log('average:', average(sum))
+
+        // Calculate and return the score.
         return {
           score: 1 - (Math.round(average(sum) / 3) / 100),
           range: (Math.max(...sum) - Math.min(...sum)) / 60
         }
       })
-
-    // Get the diffs.
-
-    // Calculate and return the score.
-    // return Math.mean()
-    // return {score: 0.8, range: '0:30'}
   }
 }
