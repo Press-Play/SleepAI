@@ -185,11 +185,9 @@ export default {
       // syncFitbit
       return User.getCurrentUser()
         .then(user => {
-          console.log('user:', user)
           return user.syncFitbit()
         })
         .then(data => {
-          console.log('data:', data)
           return data
         })
     },

@@ -16,10 +16,10 @@ export default class Sleep {
     breakdown,
     ) {
     this.id = id 
-    this.uuid = doc(getFirestore(), 'users', uuid),
-    this.date = Timestamp.fromDate(new Date(date)) //timestamp at 00:00:00 UTC+10 (user's local time)
-    this.timeStart = Timestamp.fromDate(new Date(timeStart))
-    this.timeEnd = Timestamp.fromDate(new Date(timeEnd))
+    this.uuid = uuid
+    this.date = new Date(date) //timestamp at 00:00:00 UTC+10 (user's local time)
+    this.timeStart = new Date(timeStart)
+    this.timeEnd = new Date(timeEnd)
     this.main = main //boolean
     this.duration = duration //number
     this.breakdown = breakdown //map
@@ -31,10 +31,10 @@ export default class Sleep {
       toFirestore: (sleep) => {
         return {
           id: sleep.id,
-          uuid: sleep.uuid,
-          date: sleep.date,
-          timeStart: sleep.timeStart,
-          timeEnd: sleep.timeEnd,
+          uuid: doc(getFirestore(), 'users', sleep.uuid),
+          date: Timestamp.fromDate(sleep.date),
+          timeStart: Timestamp.fromDate(sleep.timeStart),
+          timeEnd: Timestamp.fromDate(sleep.timeEnd),
           main: sleep.main,
           duration: sleep.duration,
           breakdown: sleep.breakdown,
@@ -42,12 +42,13 @@ export default class Sleep {
       },
       fromFirestore: (snapshot, options) => {
         const data = snapshot.data(options)
+
         return new Sleep(
-          data.id,
-          data.uuid,
-          data.date,
-          data.timeStart,
-          data.timeEnd,
+          snapshot.id,
+          data.uuid.path.split('/')[1],
+          data.date.toDate(),
+          data.timeStart.toDate(),
+          data.timeEnd.toDate(),
           data.main,
           data.duration,
           data.breakdown,
@@ -79,30 +80,45 @@ export default class Sleep {
 
   // }
 
-  static async getUserSleepLatest(uuid) {
+  static async getUserSleepLatest() {
+    const user = await User.getCurrentUser()
+    console.log('Getting latest sleep data for user:', user.id)
     const ref = collection(getFirestore(), 'sleeps').withConverter(Sleep.getFirestoreConverter())
-    const q = query(ref, where('uuid', '==', uuid), orderBy('date', 'desc'), limit(1))
+    const userRef = doc(getFirestore(), 'users', user.id)
+    const q = query(ref, where('uuid', '==', userRef), orderBy('date', 'desc'), limit(1))
     const snap = await getDocs(q)
+    let result = null
     snap.forEach((doc) => {
       // doc.data() is never undefined for query doc snapshots
-      console.log(doc.id, " => ", doc.data());
-      return doc
-    });
+      console.log(doc.id, " => ", doc.data())
+      result = doc.data()
+    })
+    return result
   }
 
   static async syncFitbit(dateFrom) {
+    // Get latest sleep date from database.
+    const latest = await Sleep.getUserSleepLatest()
+
+    // If there is no sleeps available, sync the last 2 weeks before sign up
+    // until today. Otherwise, query Fitbit for sleep log list from that date
+    // until today.
+    console.log('latest:', latest)
+    if (latest) {
+      let dateCalc = new Date(latest.date)
+      dateCalc.setDate(dateCalc.getDate() + 1)
+      dateFrom = dateCalc.toISOString().slice(0, 10)
+    }
+
     const ref = collection(getFirestore(), 'sleeps').withConverter(Sleep.getFirestoreConverter())
     const api = new FitbitUserAPI()
     const data = await api.getSleepLogList(dateFrom)
-    console.log('sleep data:', data)
     for (const s of data) {
       const mapped = await Sleep.mapFitbitSleepLog(s)
       if (!mapped.uuid) {
         throw new Error('A uuid is required to save a sleep.')
       }
-      console.log('Mapped sleep', mapped)
-      const doc = await addDoc(ref, mapped)
-      console.log('Added doc:', doc)
+      await addDoc(ref, mapped)
     }
   }
 

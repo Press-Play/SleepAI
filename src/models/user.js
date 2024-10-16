@@ -58,18 +58,8 @@ export default class User {
   }
 
   async syncFitbit() {
-    // Get latest sleep date from database.
-    const latest = await Sleep.getUserSleepLatest(this.id)
-
-    // If there is no sleeps available, sync the last 2 weeks before sign up
-    // until today. Otherwise, query Fitbit for sleep log list from that date
-    // until today.
-    if (!latest) {
-      console.log('latest:', latest)
-      await Sleep.syncFitbit('2024-10-01')
-    }
-
-    // Save it to database.
+    // TODO: Update this to be 2 weeks before sign up date.
+    return await Sleep.syncFitbit('2024-10-01')
   }
 
   async getSleepGoal() {
