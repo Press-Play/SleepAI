@@ -50,6 +50,7 @@ export default {
     getSleepGoal() {
       User.getCurrentUser()
         .then(user => {
+          // TODO: Remove this bit of test code.
           Goal.syncFitbit()
             .then(() => {
               return
@@ -80,6 +81,13 @@ export default {
         return moment(t, 'HH:mm').format('hh:mm A')
       }
     },
+    time12To24(t) {
+      if (!t) {
+        return null
+      } else {
+        return moment(t, 'hh:mm A').format('HH:mm')
+      }
+    },
     handleGetTime(t) {
       this.timeWake = t
       this.timeBed = moment(this.timeWake, 'hh:mm A').subtract(
@@ -97,8 +105,16 @@ export default {
         .format('hh:mm A')
       return finish
     },
-    goToNext() {
+    async goToNext() {
       // TODO: Save goal, but set as inactive.
+      const user = await User.getCurrentUser()
+      const goal = new Goal(
+        this.sleepDurationGoal,
+        this.time12To24(this.timeBed),
+        this.time12To24(this.timeWake),
+        user.id,
+      )
+      goal.save()
       this.$router.push('/')
     },
   },

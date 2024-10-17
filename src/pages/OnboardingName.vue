@@ -37,14 +37,18 @@ export default {
     }
   },
   beforeMount() {
+    // TODO: Change to use User model instead of vuefire.
     getCurrentUser().then(user => {
       this.user = user
       this.name = user.displayName
+      return User.getCurrentUser()
+    }).then(user => {
+
       //------------
-      const userModel = new User(user.uid)
-      console.log('userModel:', userModel)
-      console.log('userModel.name:', userModel.name)
-      console.log('userModel.id:', userModel.id)
+      // const userModel = new User(user.uid)
+      console.log('userModel:', user)
+      console.log('userModel.name:', user.name)
+      console.log('userModel.id:', user.id)
       //------------
     })
   },
@@ -54,10 +58,9 @@ export default {
     },
     async updateName(user, name) {
       // Update name to user auth object.
-      const result = await updateProfile(user, {
+      return await updateProfile(user, {
         displayName: name
       })
-      return result
     },
     async goToNext() {
       this.loading = true
@@ -65,7 +68,8 @@ export default {
       const db = getFirestore()
 
       // See if a current user is logged in, otherwise create anon user.
-      let user = await getCurrentUser()
+      // let user = await getCurrentUser()
+      let user = auth.currentUser
 
       if (!user) {
         console.log('No user is logged in, creating one')
@@ -84,7 +88,7 @@ export default {
             const errorMessage = error.message
             console.log('errorCode:', errorCode)
             console.log('errorMessage:', errorMessage)
-          });
+          })
       } else {
         console.log('user:', user)
         console.log('user.uid:', user.uid)

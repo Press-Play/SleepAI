@@ -36,8 +36,8 @@ export default class Goal {
         return new Goal(
           data.uuid.path.split('/')[1],
           data.targetDuration,
-          data.targetTimeBed.toDate(),
-          data.targetTimeWake.toDate(),
+          data.targetTimeBed,
+          data.targetTimeWake,
           data.active,
         )
       }
@@ -57,10 +57,21 @@ export default class Goal {
     return result
   }
 
-  // static async save() {
-  //   TODO: Save new goals to database and set to active.
-  //   TODO: Sync goals from database to Fitbit?
-  // }
+  async save() {
+    // TODO: Sync goals from database to Fitbit?
+    const ref = collection(getFirestore(), 'goals').withConverter(Goal.getFirestoreConverter())
+    if (!this.uuid) {
+      throw new Error('Can not save goal because no UUID is set.')
+    }
+    // TODO: Handle existing goal.
+    // const existing = await Goal.load()
+    // if (existing) {
+      // goalRef
+      // return setDoc(goalRef, this, existing.id)
+    // } else {
+      return await addDoc(ref, this)
+    // }
+  }
 
   static async syncFitbit() {
     // TODO: Save sleep goal to database if it doesn't exist.

@@ -7,7 +7,7 @@ import moment from 'moment'
 
 export default class User {
   constructor (id, name, email) {
-    // TODO: Get all user fields from database.
+    // TODO: Really need to fix this class.
     if (!id) {
       throw new Error('User requires an id.')
     }
@@ -36,7 +36,7 @@ export default class User {
 
   static async getCurrentUser() {
     const auth = getAuth()
-    const user = new User(auth.currentUser.uid, auth.currentUser.name, auth.currentUser.email)
+    const user = new User(auth.currentUser.uid, auth.currentUser.displayName, auth.currentUser.email)
     user.load()
     return user
   }
