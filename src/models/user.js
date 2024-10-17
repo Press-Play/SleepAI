@@ -107,4 +107,22 @@ export default class User {
       range: null,
     }
   }
+
+  async getSleepQualityScore(dateFrom, dateTo) {
+    // Get the average quality across date range.
+    const dailys = await Sleep.getSleeps(dateFrom, dateTo)
+
+    // Extract out just the quality.
+    let qualities = []
+    for (const daily of dailys) {
+      let quality = daily.quality
+      qualities.push(quality)
+    }
+
+    const average = array => array.reduce((a, b) => a + b) / array.length
+    return {
+      score: average(qualities),
+      range: null,
+    }
+  }
 }

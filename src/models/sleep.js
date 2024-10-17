@@ -116,6 +116,12 @@ export default class Sleep {
       })
   }
 
+  // TODO: This will be a complex calculation that takes into account
+  //         1. The different proportion of the sleep stages.
+  //         2. ?
+  // For now just return efficiency.
+  get quality() { return this.efficiency }
+
   // static async getSleepDate(date) {
   //   const ref = doc(getFirestore(), 'sleeps', id).withConverter(Sleep.getFirestoreConverter())
   //   const sleep = await getDoc(ref)
