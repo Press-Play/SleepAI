@@ -6,8 +6,8 @@
       :plugins="plugins"
     />
     <div v-if="loading">Loading...</div>
-    <div v-else class="text-2xl font-medium">{{ data.datasets[0].data[0] }}%</div>
-    <div>{{ label }}</div>
+    <div v-else class="text-2xl font-medium">{{ label }}</div>
+    <div>{{ name }}</div>
   </div>
 </template>
 
@@ -23,9 +23,10 @@ export default {
     Doughnut
   },
   props: {
-    value: Number,
+    value: Number, // Value is how full the bar should be from 0..100.
+    label: String, // Label is the number to be shown, including units.
     icon: String,
-    label: String,
+    name: String, // Name is the metric is called.
   },
   data() {
     return {

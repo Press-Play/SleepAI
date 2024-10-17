@@ -10,9 +10,10 @@
 <script>
 import User from '@/models/user'
 import MetricCircle from '@/components/MetricCircle'
+import moment from 'moment'
 
 export default {
-  name: 'MetricSleepConsistency',
+  name: 'MetricSleepDuration',
   props: {
     initialDateFrom: String,
     initialDateTo: String,
@@ -24,8 +25,8 @@ export default {
     return {
       score: undefined,
       label: undefined,
-      icon: '💤',
-      name: 'Consistency',
+      icon: '💧',
+      name: 'Duration',
       // TODO: Default to today - 7 days.
       dateFrom: this.initialDateFrom,
       // TODO: Default to today.
@@ -38,10 +39,12 @@ export default {
       User.getCurrentUser()
         .then(user => {
           // Query their consistency score for the past 7 days.
-          return user.getSleepConsistencyScore(this.dateFrom, this.dateTo)
-        }).then(consistency => {
-          this.score = Math.round(consistency.score * 100)
-          this.label = Math.round(consistency.score * 100) + '%'
+          return user.getSleepDuration(this.dateFrom, this.dateTo)
+        }).then(duration => {
+          this.score = parseInt((duration.score * 100).toFixed(2))
+          // this.label = (duration.minutes / 60).toFixed(2) + 'hrs'
+          this.label = moment.duration(duration.minutes, 'minutes').hours() + 'h '
+            + moment.duration(duration.minutes, 'minutes').minutes() + 'm'
         })
 
     } catch(e) {

@@ -11,7 +11,7 @@
           :initialDateFrom='dateFrom'
           :initialDateTo='dateTo'
         />
-        <MetricSleepConsistency
+        <MetricSleepDuration
           :initialDateFrom='dateFrom'
           :initialDateTo='dateTo'
         />
@@ -68,11 +68,13 @@
 import { getCurrentUser } from 'vuefire'
 import Sleep from '@/models/sleep'
 import MetricSleepConsistency from '@/components/MetricSleepConsistency'
+import MetricSleepDuration from '@/components/MetricSleepDuration'
 
 export default {
   name: 'HomePage',
   components: {
-    MetricSleepConsistency
+    MetricSleepConsistency,
+    MetricSleepDuration
   },
   data() {
     return {

@@ -87,4 +87,24 @@ export default class User {
       range: null, // (Math.max(...sum) - Math.min(...sum)) / 60
     }
   }
+
+  async getSleepDuration(dateFrom, dateTo) {
+    // Get the average duration across date range.
+    const dailys = await Sleep.getSleeps(dateFrom, dateTo)
+    const goal = await Goal.load()
+
+    // Extract out just the duration.
+    let durations = []
+    for (const daily of dailys) {
+      let duration = daily.duration
+      durations.push(duration)
+    }
+
+    const average = array => array.reduce((a, b) => a + b) / array.length
+    return {
+      score: average(durations) / goal.targetDuration,
+      minutes: average(durations),
+      range: null,
+    }
+  }
 }

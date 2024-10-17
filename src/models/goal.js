@@ -90,7 +90,7 @@ export default class Goal {
     }
 
     const goal = new Goal(
-      data.goal.minDuration / 60,
+      data.goal.minDuration,
       data.goal.bedtime,
       data.goal.wakeupTime,
       user.id,
