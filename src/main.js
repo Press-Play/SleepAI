@@ -30,9 +30,8 @@ const router = createRouter({
   routes,
 })
 
-router.beforeEach(async (to, from) => {
+router.beforeEach(async (to) => {
   const user = await getCurrentUser()
-  console.log('user:', user)
   if (to.meta.isAnonymous && !user) {
     if (to.path === '/') {
       return { name: 'Start Onboarding'}
@@ -40,8 +39,6 @@ router.beforeEach(async (to, from) => {
       return { name: 'Forbidden' }
     }
   }
-  console.log('to:', to)
-  console.log('from:', from)
 })
 
 const { firebaseApp } = getFirebaseApp()
