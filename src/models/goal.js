@@ -34,10 +34,10 @@ export default class Goal {
         const data = snapshot.data(options)
 
         return new Goal(
-          data.uuid.path.split('/')[1],
           data.targetDuration,
           data.targetTimeBed,
           data.targetTimeWake,
+          data.uuid.path.split('/')[1],
           data.active,
         )
       }

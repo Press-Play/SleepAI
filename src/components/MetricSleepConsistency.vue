@@ -38,9 +38,7 @@ export default {
           // Query their consistency score for the past 7 days.
           return user.getSleepConsistencyScore(this.dateFrom, this.dateTo)
         }).then(consistency => {
-          console.log('consistency:', consistency)
-          this.score = consistency.score * 100
-          console.log('this.score', this.score)
+          this.score = Math.round(consistency.score * 100)
         })
 
     } catch(e) {

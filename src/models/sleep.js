@@ -1,6 +1,7 @@
-import { getFirestore, collection, doc, addDoc, getDoc, getDocs, query, where, orderBy, limit } from 'firebase/firestore'
+import { getFirestore, collection, doc, addDoc, getDocs, query, where, orderBy, limit } from 'firebase/firestore'
 import { FitbitUserAPI } from '@/helpers/fitbit'
 import User from "@/models/user"
+import Goal from "@/models/goal"
 import moment from 'moment'
 
 // TODO: Write functions to get calculated fields: latency, consistency.
@@ -80,20 +81,47 @@ export default class Sleep {
   }
 
   get consistency() {
-    // TODO: Get the absolute difference between target and actual for both bed time and wake time.
-    // this.timeStart.getTime()
-    // TODO: Sum them together, normalise, and flip to create a percentage score.
-    return null
+    return Goal.load()
+      .then(goal => {
+        let bed = moment(goal.targetTimeBed, 'HH:mm')
+        let wake = moment(goal.targetTimeWake, 'HH:mm')
+
+        // Set the target bedtime date to the date of the sleep.
+        const sleepDate = moment(this.date.getTime())
+        bed.set({
+          'year': sleepDate.year(),
+          'month': sleepDate.month(),
+          'date': sleepDate.date(),
+        })
+        wake.set({
+          'year': sleepDate.year(),
+          'month': sleepDate.month(),
+          'date': sleepDate.date(),
+        })
+        if (wake.isBefore(bed)) {
+          bed.subtract(1, 'd')
+        }
+
+        // Get the absolute difference between target and actual for both bed time and wake time.
+        const sum =
+          Math.abs(moment(this.timeStart.getTime()).diff(bed, 'minutes')) +
+          Math.abs(moment(this.timeEnd.getTime()).diff(wake, 'minutes'))
+
+        // Normalise, and flip to create a percentage score.
+        let score = 1 - (Math.round(sum / 3) / 100)
+        if (score < 0) {
+          score = 0
+        }
+        return score
+      })
   }
 
-  static async getSleep(id) {
-    // If an id is given, get sleep log from the database.
-    // If no id is given, create a new sleep log instance to be saved.
-    const ref = doc(getFirestore(), 'sleeps', id).withConverter(Sleep.getFirestoreConverter())
-    const sleep = await getDoc(ref)
-    sleep._ref = ref
-    return sleep
-  }
+  // static async getSleepDate(date) {
+  //   const ref = doc(getFirestore(), 'sleeps', id).withConverter(Sleep.getFirestoreConverter())
+  //   const sleep = await getDoc(ref)
+  //   sleep._ref = ref
+  //   return sleep
+  // }
 
   static async getUserSleepLatest() {
     const user = await User.getCurrentUser()
@@ -126,7 +154,6 @@ export default class Sleep {
     snap.forEach((doc) => {
       result.push(doc.data())
     })
-    console.log('getSleeps():', result)
     return result
   }
 
