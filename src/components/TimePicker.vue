@@ -1,13 +1,26 @@
 <template>
-  <div class="flex flex-row justify-center my-4">
-    <select name="time-hour" v-model="timeHour" class="w-24 h-20 mt-0 p-0 text-6xl font-medium bg-gray-100 rounded-lg text-center">
+  <div v-if="small" class="flex flex-row justify-center items-center my-2 font-normal">
+    <select name="time-hour" v-model="timeHour" class="w-8 h-10 mt-0 p-0 text-xl bg-gray-100 rounded-lg text-center">
       <option v-for="n in 12" :key="n" :value="formatTime(n)">{{ formatTime(n) }}</option>
     </select>
-    <span class="w-6 h-20 text-6xl font-medium">:</span>
-    <select name="time-minutes" v-model="timeMinute" class="w-24 h-20 mt-0 p-0 text-6xl font-medium bg-gray-100 rounded-lg text-center">
+    <div class="w-2 h-full text-xl text-center">:</div>
+    <select name="time-minutes" v-model="timeMinute" class="w-8 h-10 mt-0 p-0 text-xl bg-gray-100 rounded-lg text-center">
       <option v-for="n in 4" :key="n" :value="formatTime((n-1)*15)">{{ formatTime((n-1)*15) }}</option>
     </select>
-    <select name="time-meridiem" v-model="timeMeridiem" class="w-36 h-20 ml-4 mt-0 p-0 text-6xl font-medium bg-gray-100 rounded-lg text-center">
+    <select name="time-meridiem" v-model="timeMeridiem" class="w-10 h-10 ml-2 mt-0 p-0 text-xl bg-gray-100 rounded-lg text-center">
+      <option value="AM">AM</option>
+      <option value="PM">PM</option>
+    </select>
+  </div>
+  <div v-else class="flex flex-row justify-center items-center my-4 font-medium">
+    <select name="time-hour" v-model="timeHour" class="w-24 h-20 mt-0 p-0 text-6xl bg-gray-100 rounded-lg text-center">
+      <option v-for="n in 12" :key="n" :value="formatTime(n)">{{ formatTime(n) }}</option>
+    </select>
+    <span class="w-6 h-full text-6xl text-center">:</span>
+    <select name="time-minutes" v-model="timeMinute" class="w-24 h-20 mt-0 p-0 text-6xl bg-gray-100 rounded-lg text-center">
+      <option v-for="n in 4" :key="n" :value="formatTime((n-1)*15)">{{ formatTime((n-1)*15) }}</option>
+    </select>
+    <select name="time-meridiem" v-model="timeMeridiem" class="w-36 h-20 ml-4 mt-0 p-0 text-6xl bg-gray-100 rounded-lg text-center">
       <option value="AM">AM</option>
       <option value="PM">PM</option>
     </select>
@@ -15,12 +28,11 @@
 </template>
 
 <script>
-// import { toRefs } from 'vue'
-
 export default {
   name: 'TimePicker',
   props: {
-    initialTime: String
+    initialTime: String,
+    small: Boolean,
   },
   data() {
     return {

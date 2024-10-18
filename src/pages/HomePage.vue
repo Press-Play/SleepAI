@@ -22,13 +22,23 @@
       </div>
     </div>
     <!-- TODO: Only show if goal is active -->
-<!--     <div class="flex flex-row gap-4 items-center m-4 p-4 rounded-lg bg-green-100 text-left">
+    <div class="flex flex-row gap-4 items-center m-4 p-4 rounded-lg bg-green-100 text-left">
       <div class="text-2xl pt-2">🎯</div>
       <div>
-        <div>1. Be in bed 10:30PM – 11:00PM</div>
-        <div>2. Wake up around 7:00AM</div>
+        <h3>Goal</h3>
+            <div class="flex flex-row gap-10">
+              <div>
+                <div>🛏️ Bed time</div>
+                <!-- initialTime='timeWake' @get-time="handleGetTime" -->
+                <TimePicker :small="true" :initialTime='timeBed'/>
+              </div>
+              <div>
+                <div>⏰ Wake up</div>
+                <TimePicker :small="true" :initialTime='timeWake'/>
+              </div>
+            </div>
       </div>
-    </div> -->
+    </div>
     <div class="flex flex-row gap-4 items-top m-4 p-4 rounded-lg bg-yellow-100 text-left">
       <div class="text-2xl pt-2">🔍</div>
       <div>
@@ -42,19 +52,29 @@
         <h3>Recommendations</h3>
         <p>Your top priority should be to focus on sleep consistency.</p>
         <p>Consistency is the most important part of getting good sleep every night. When you go to bed at the same time every night, your body learns to anticipate sleep, which helps you get better quality sleep.</p>
-        <div class="p-4 mr-10 rounded-lg bg-green-100">
-          <p class="font-medium">🎯 Your recommended goal:</p>
-          <ol>
-            <li>1. Be in bed 10:30PM – 11:00PM</li>
-            <li>2. Wake up around 7:00AM</li>
-          </ol>
-          <button>Commit to goal</button>
+        <div class="flex flex-row gap-4 p-4 mr-10 rounded-lg bg-green-100">
+          <div class="text-2xl pt-2">🎯</div>
+          <div class="flex flex-col grow">
+            <h3>Your recommended goal</h3>
+            <div class="flex flex-row gap-10">
+              <div>
+                <div>🛏️ Bed time</div>
+                <!-- initialTime='timeWake' @get-time="handleGetTime" -->
+                <TimePicker :small="true" :initialTime='timeBed'/>
+              </div>
+              <div>
+                <div>⏰ Wake up</div>
+                <TimePicker :small="true" :initialTime='timeWake'/>
+              </div>
+            </div>
+            <button class="self-start">Commit to goal</button>
+          </div>
         </div>
       </div>
     </div>
 
 
-    <button @click="getSleeps()" class="mb-10">Get sleeps</button>
+    <button @click="getSleeps()" class="mb-96">Get sleeps</button>
   </div>
   <div class="fixed inset-x-0 bottom-0 w-full max-w-screen-sm left-1/2 -translate-x-1/2 px-4">
     <div class="flex flex-row justify-between px-8 pt-4 pb-8 rounded-t-3xl bg-gray-100 cursor-pointer">
@@ -70,6 +90,7 @@ import Sleep from '@/models/sleep'
 import MetricSleepConsistency from '@/components/MetricSleepConsistency'
 import MetricSleepDuration from '@/components/MetricSleepDuration'
 import MetricSleepQuality from '@/components/MetricSleepQuality'
+import TimePicker from '@/components/TimePicker'
 
 export default {
   name: 'HomePage',
@@ -77,6 +98,7 @@ export default {
     MetricSleepConsistency,
     MetricSleepDuration,
     MetricSleepQuality,
+    TimePicker,
   },
   data() {
     return {
@@ -84,6 +106,9 @@ export default {
       name: undefined,
       dateFrom: '2024-10-06',
       dateTo: '2024-10-12',
+      // TODO: Set these times properly.
+      timeBed: '11:00 PM',
+      timeWake: '7:00 AM',
     }
   },
   beforeMount() {
