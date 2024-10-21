@@ -91,11 +91,9 @@ export default {
     handleGetTime(t) {
       this.timeWake = t
       this.timeBed = moment(this.timeWake, 'hh:mm A').subtract(
-        moment.duration(this.sleepDurationGoal / this.sleepEfficiency, 'hours'))
+        moment.duration(this.sleepDurationGoal / this.sleepEfficiency, 'minutes'))
         .format('hh:mm A')
       this.timeBed = this.roundUp15Minutes(this.timeBed)
-      console.log('this.timeWake:', this.timeWake)
-      console.log('this.timeBed:', this.timeBed)
     },
     roundUp15Minutes(t) {
       const start = moment(t, 'hh:mm A');
