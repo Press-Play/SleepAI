@@ -68,7 +68,7 @@ export default {
             this.timeWake = this.time24To12(goal.targetTimeWake)
           } else {
             // Set defaults.
-            this.sleepDurationGoal = 7
+            this.sleepDurationGoal = 7 * 60
             this.timeBed = this.time24To12('22:15')
             this.timeWake = '7:00 AM'
           }

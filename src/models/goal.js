@@ -10,7 +10,7 @@ export default class Goal {
     uuid,
     active = false,
     ) {
-    this.targetDuration = targetDuration
+    this.targetDuration = targetDuration // In minutes.
     this.targetTimeBed = targetTimeBed
     this.targetTimeWake = targetTimeWake
     this.uuid = uuid
