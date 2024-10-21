@@ -70,6 +70,21 @@ export default class User {
     return await Goal.load()
   }
 
+  async getSleepEfficiency(dateFrom, dateTo) {
+    // Get the average efficiency across date range.
+    const dailys = await Sleep.getSleeps(dateFrom, dateTo)
+
+    // Extract out just the efficiency.
+    let efficiencies = []
+    for (const daily of dailys) {
+      let efficiency = await daily.efficiency
+      efficiencies.push(efficiency)
+    }
+
+    const average = array => array.reduce((a, b) => a + b) / array.length
+    return average(efficiencies)
+  }
+
   async getSleepConsistencyScore(dateFrom, dateTo) {
     // Get the average consistency across date range.
     const dailys = await Sleep.getSleeps(dateFrom, dateTo)

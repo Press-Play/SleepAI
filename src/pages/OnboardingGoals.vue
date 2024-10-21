@@ -34,8 +34,7 @@ export default {
       timeBed: undefined,
       timeWake: undefined,
       sleepDurationGoal: undefined,
-      // TODO: Need to calculate based on sleep data.
-      sleepEfficiency: 0.8,
+      sleepEfficiency: undefined,
     }
   },
   beforeMount() {
@@ -47,8 +46,8 @@ export default {
       const user = await getCurrentUser()
       this.name = user.displayName
     },
-    getSleepGoal() {
-      User.getCurrentUser()
+    async getSleepGoal() {
+      const user = await User.getCurrentUser()
         .then(user => {
           // TODO: Remove this bit of test code.
           Goal.syncFitbit()
@@ -57,7 +56,10 @@ export default {
             })
           return user
         })
-        .then(user => {
+      
+      user.getSleepEfficiency('2024-10-01', '2024-10-14')
+        .then(efficiency => {
+          this.sleepEfficiency = efficiency
           return user.getSleepGoal()
         })
         .then(goal => {

@@ -66,7 +66,7 @@ export default class Sleep {
   }
 
   get efficiency() {
-    return (this.duration / this.opportunity).toFixed(2)
+    return Math.round(this.duration / this.opportunity * 1e2) / 1e2
   }
 
   get latency() {
