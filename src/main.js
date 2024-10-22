@@ -12,6 +12,7 @@ import OnboardingNameView from './pages/OnboardingName.vue'
 import OnboardingImportView from './pages/OnboardingImport.vue'
 import OnboardingQuestionsView from './pages/OnboardingQuestions.vue'
 import OnboardingGoalsView from './pages/OnboardingGoals.vue'
+import PillarDurationView from './pages/PillarDuration.vue'
 import ForbiddenView from './pages/ForbiddenPage.vue'
 
 const routes = [
@@ -21,6 +22,7 @@ const routes = [
   { path: '/onboarding/import', component: OnboardingImportView, meta: { isAnonymous: true } },
   { path: '/onboarding/questions', component: OnboardingQuestionsView, meta: { isAnonymous: true } },
   { path: '/onboarding/goals', component: OnboardingGoalsView, meta: { isAnonymous: true } },
+  { path: '/duration', component: PillarDurationView, name: 'Duration', meta: { isAnonymous: true } },
   { path: '/forbidden', component: ForbiddenView, name: 'Forbidden' },
   // TODO: { path: '/:pathMatch(.*)*', component: PathNotFound },
 ]
