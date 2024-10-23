@@ -64,13 +64,18 @@ export default {
       options: {
         responsive: true,
         maintainAspectRatio: true,
-        // rotation: -(300/2),
-        // circumference: 300,
-        // cutout: '85%',
         borderRadius: 5,
         scales: {
           x: {
+            display: true,
             stacked: true,
+            grid: {
+              drawOnChartArea: false,
+              offset: false,
+            },
+            border: {
+              display: false,
+            },
           },
           y: {
             display: true,
@@ -80,7 +85,13 @@ export default {
             },
             stacked: true,
             ticks: {
-              stepSize: 4
+              stepSize: 4,
+            },
+            grid: {
+              drawOnChartArea: false,
+            },
+            border: {
+              display: false,
             },
           },
           y1: {
@@ -92,8 +103,6 @@ export default {
             grid: {
               drawOnChartArea: false,
             },
-            // suggestedMin: 0,
-            // suggestedMax: 1,
           },
         },
         plugins: {
