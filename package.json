@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "chart.js": "^4.4.4",
+    "chartjs-plugin-datalabels": "^2.2.0",
     "core-js": "^3.8.3",
     "firebase": "^10.14.0",
     "moment": "^2.30.1",
