@@ -21,6 +21,7 @@ import { getCurrentUser } from 'vuefire'
 import TimePicker from '@/components/TimePicker'
 import { get7DaysAgo, time24To12, time12To24, roundUp15Minutes, subtractDurationFromTime } from "@/helpers/time"
 import User from "@/models/user"
+// TODO: Remove Goal model from here, it should only be called via User model.
 import Goal from "@/models/goal"
 
 export default {
@@ -78,9 +79,6 @@ export default {
       // When the time is updated, consume the emitted event to calculate the
       // bed time based on sleep duration goal and past 7d efficiency.
       this.timeWake = t
-      // this.timeBed = moment(this.timeWake, 'hh:mm A').subtract(
-      //   moment.duration(this.sleepDurationGoal / this.sleepEfficiency, 'minutes'))
-      //   .format('hh:mm A')
       this.timeBed = subtractDurationFromTime(this.timeWake, this.sleepDurationGoal / this.sleepEfficiency)
       this.timeBed = this.roundUp15Minutes(this.timeBed)
     },

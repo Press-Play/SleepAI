@@ -86,12 +86,14 @@
 </template>
 
 <script>
+// TODO: Remove vuefire and just get auth'ed user from User model.
 import { getCurrentUser } from 'vuefire'
-import { getWeek } from '@/helpers/time'
+import { get7DaysAgo, time24To12 } from '@/helpers/time'
 import MetricSleepConsistency from '@/components/MetricSleepConsistency'
 import MetricSleepDuration from '@/components/MetricSleepDuration'
 import MetricSleepQuality from '@/components/MetricSleepQuality'
 import TimePicker from '@/components/TimePicker'
+import User from "@/models/user"
 
 export default {
   name: 'HomePage',
@@ -102,13 +104,15 @@ export default {
     TimePicker,
   },
   data() {
+    const dates = get7DaysAgo()
+
     return {
       sleepProfileProblems: "",
       name: undefined,
-      dateFrom: getWeek().start,
-      dateTo: getWeek().end,
+      dateFrom: dates.start,
+      dateTo: dates.end,
       // TODO: Set these times properly.
-      timeBed: '11:00 PM',
+      timeBed: '10:15 PM',
       timeWake: '7:00 AM',
     }
   },
@@ -117,12 +121,25 @@ export default {
     if (localStorage.getItem("sleepProfileProblems") !== null) {
       this.sleepProfileProblems = JSON.parse(localStorage.getItem("sleepProfileProblems"))
     }
+
+    User.getCurrentUser()
+      .then(user => {
+        return user.getSleepGoal()
+      })
+      .then(goal => {
+        if (goal) {
+          // this.sleepDurationGoal = goal.targetDuration
+          this.timeBed = time24To12(goal.targetTimeBed)
+          this.timeWake = time24To12(goal.targetTimeWake)
+        }
+      })
   },
   methods: {
     async getName() {
       const user = await getCurrentUser()
       this.name = user.displayName
     },
+    // TODO: Handle emit event for time selectors.
   },
 }
 </script>
