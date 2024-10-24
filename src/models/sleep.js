@@ -131,7 +131,6 @@ export default class Sleep {
 
   static async getUserSleepLatest() {
     const user = await User.getCurrentUser()
-    console.log('Getting latest sleep data for user:', user.id)
     const ref = collection(getFirestore(), 'sleeps').withConverter(Sleep.getFirestoreConverter())
     const userRef = doc(getFirestore(), 'users', user.id)
     const q = query(ref, where('uuid', '==', userRef), orderBy('date', 'desc'), limit(1))
@@ -145,7 +144,6 @@ export default class Sleep {
 
   static async getSleeps(dateFrom, dateTo) {
     const user = await User.getCurrentUser()
-    console.log('Getting latest sleep data for user:', user.id)
     const ref = collection(getFirestore(), 'sleeps').withConverter(Sleep.getFirestoreConverter())
     const userRef = doc(getFirestore(), 'users', user.id)
     const q = query(
@@ -174,7 +172,6 @@ export default class Sleep {
     // If there is no sleeps available, sync the last 2 weeks before sign up
     // until today. Otherwise, query Fitbit for sleep log list from that date
     // until today.
-    console.log('latest:', latest)
     if (latest) {
       let dateCalc = new Date(latest.date)
       dateCalc.setDate(dateCalc.getDate() + 1)
@@ -204,7 +201,6 @@ export default class Sleep {
       },
       data: Sleep.mapFitbitSleepLogLevelsData(log.levels.data),
     }
-    console.log('breakdown:', breakdown)
     const user = await User.getCurrentUser()
     return new Sleep(
       null,

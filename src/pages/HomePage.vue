@@ -1,24 +1,28 @@
 <template>
-  <div class="relative mt-20 mb-20 max-w-screen-sm left-1/2 -translate-x-1/2">
+  <div class="relative mt-20 mb-28 max-w-screen-sm left-1/2 -translate-x-1/2">
     <div class="px-12">
       <h2>Hi <span class="font-bold">{{ name }}</span>!</h2>
       <p>See your sleep insights and recommendations here! 😇</p>
     </div>
     <div>
       <h3>Past 7 days</h3>
-      <div class="flex flex-row gap-8 m-4 justify-center">
+      <div class="flex flex-row m-4 justify-between">
+        <div class="min-w-2"></div>
         <MetricSleepConsistency
           :initialDateFrom='dateFrom'
           :initialDateTo='dateTo'
         />
+        <div class="min-w-2"></div>
         <MetricSleepDuration
           :initialDateFrom='dateFrom'
           :initialDateTo='dateTo'
         />
+        <div class="min-w-2"></div>
         <MetricSleepQuality
           :initialDateFrom='dateFrom'
           :initialDateTo='dateTo'
         />
+        <div class="min-w-2"></div>
       </div>
     </div>
     <!-- TODO: Only show if goal is active -->
@@ -48,18 +52,18 @@
     </div>
     <div class="flex flex-row gap-4 items-top m-4 p-4 rounded-lg bg-sky-100 text-left">
       <div class="text-2xl pt-2">💡</div>
-      <div class="flex flex-col grow">
+      <div>
+      <!-- <div class="flex flex-col grow"> -->
         <h3>Recommendations</h3>
         <p>Your top priority should be to focus on sleep consistency.</p>
         <p>Consistency is the most important part of getting good sleep every night. When you go to bed at the same time every night, your body learns to anticipate sleep, which helps you get better quality sleep.</p>
-        <div class="flex flex-row gap-4 p-4 mr-10 rounded-lg bg-green-100">
+        <!-- <div class="flex flex-row gap-4 p-4 mr-10 rounded-lg bg-green-100">
           <div class="text-2xl pt-2">🎯</div>
           <div class="flex flex-col grow">
             <h3>Your recommended goal</h3>
-            <div class="flex flex-row gap-10">
+            <div class="flex flex-row gap-x-10 gap-y-0 flex-wrap">
               <div>
                 <div>🛏️ Bed time</div>
-                <!-- initialTime='timeWake' @get-time="handleGetTime" -->
                 <TimePicker :small="true" :initialTime='timeBed'/>
               </div>
               <div>
@@ -69,12 +73,9 @@
             </div>
             <button class="self-start">Commit to goal</button>
           </div>
-        </div>
+        </div> -->
       </div>
     </div>
-
-
-    <button @click="getSleeps()" class="mb-96">Get sleeps</button>
   </div>
   <div class="fixed inset-x-0 bottom-0 w-full max-w-screen-sm left-1/2 -translate-x-1/2 px-4">
     <div class="flex flex-row justify-between px-8 pt-4 pb-8 rounded-t-3xl bg-gray-100 cursor-pointer">
@@ -86,7 +87,7 @@
 
 <script>
 import { getCurrentUser } from 'vuefire'
-import Sleep from '@/models/sleep'
+import { getWeek } from '@/helpers/time'
 import MetricSleepConsistency from '@/components/MetricSleepConsistency'
 import MetricSleepDuration from '@/components/MetricSleepDuration'
 import MetricSleepQuality from '@/components/MetricSleepQuality'
@@ -104,8 +105,8 @@ export default {
     return {
       sleepProfileProblems: "",
       name: undefined,
-      dateFrom: '2024-10-06',
-      dateTo: '2024-10-12',
+      dateFrom: getWeek().start,
+      dateTo: getWeek().end,
       // TODO: Set these times properly.
       timeBed: '11:00 PM',
       timeWake: '7:00 AM',
@@ -122,9 +123,6 @@ export default {
       const user = await getCurrentUser()
       this.name = user.displayName
     },
-    async getSleeps() {
-      return await Sleep.getSleeps('2024-10-01', '2024-10-17')
-    }
   },
 }
 </script>

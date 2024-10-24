@@ -49,6 +49,7 @@
 <script>
 import { FitbitAuth } from '@/helpers/fitbit'
 import User from '@/models/user'
+// TODO: Remove vuefire and just get auth'ed user from User model.
 import { getCurrentUser } from 'vuefire'
 
 // TODO: Extract out Fitbit auth into component.

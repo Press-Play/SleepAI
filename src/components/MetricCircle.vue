@@ -1,6 +1,6 @@
 <template>
-  <div class="w-36">
-    <div class="absolute flex justify-center items-center w-36 h-36">
+  <div class="w-28">
+    <div class="absolute flex justify-center items-center w-28 h-28">
       <img class="mt-4 w-2/6 h-2/6" :src="require('@/assets/' + icon)">
     </div>
     <Doughnut

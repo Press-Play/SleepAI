@@ -5,7 +5,6 @@
         <a href="" class="-m-1.5 p-1.5">
           <object class="h-8 w-auto pointer-events-none" :data="logoImage" type="image/svg+xml"></object>
         </a>
-        <!-- <span class="text-lg font-extralight text-gray-600">sleep&me</span> -->
       </div>
     </nav>
   </header>

@@ -39,6 +39,7 @@ import {
 } from 'chart.js'
 import ChartDataLabels from 'chartjs-plugin-datalabels'
 import MetricSleepDuration from '@/components/MetricSleepDuration'
+import { getWeek } from '@/helpers/time'
 
 ChartJS.register(
   CategoryScale,
@@ -60,8 +61,8 @@ export default {
   },
   data() {
     return {
-      dateFrom: '2024-10-06',
-      dateTo: '2024-10-12',
+      dateFrom: getWeek().start,
+      dateTo: getWeek().end,
       data: this.updateData(),
       options: {
         responsive: true,

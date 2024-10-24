@@ -8,7 +8,7 @@
       <h3 class="mt-6">When do you need to wake up by?</h3>
       <!-- <p>Your current goal for sleep is {{ sleepDurationGoal }} hours per night.</p> -->
       <TimePicker :initialTime='timeWake' @get-time="handleGetTime"/>
-      <p>Based on your sleep data, your bedtime should be no later than {{ timeBed }}.</p>
+      <p class="mx-12">Based on your sleep data, your bedtime should be no later than {{ timeBed }}.</p>
       <button @click="goToNext()">
         <span>Next →</span>
       </button>
@@ -19,9 +19,9 @@
 <script>
 import { getCurrentUser } from 'vuefire'
 import TimePicker from '@/components/TimePicker'
+import { get7DaysAgo, time24To12, time12To24, roundUp15Minutes, subtractDurationFromTime } from "@/helpers/time"
 import User from "@/models/user"
 import Goal from "@/models/goal"
-import moment from 'moment';
 
 export default {
   name: 'OnboardingGoals',
@@ -48,22 +48,14 @@ export default {
     },
     async getSleepGoal() {
       const user = await User.getCurrentUser()
-        .then(user => {
-          // TODO: Remove this bit of test code.
-          Goal.syncFitbit()
-            .then(() => {
-              return
-            })
-          return user
-        })
-      
-      user.getSleepEfficiency('2024-10-01', '2024-10-14')
+      const dates = get7DaysAgo()
+
+      user.getSleepEfficiency(dates.start, dates.end)
         .then(efficiency => {
           this.sleepEfficiency = efficiency
           return user.getSleepGoal()
         })
         .then(goal => {
-          console.log('sleepGoal:', goal)
           if (goal) {
             this.sleepDurationGoal = goal.targetDuration
             this.timeBed = this.time24To12(goal.targetTimeBed)
@@ -77,33 +69,23 @@ export default {
         })
     },
     time24To12(t) {
-      if (!t) {
-        return null
-      } else {
-        return moment(t, 'HH:mm').format('hh:mm A')
-      }
+      return time24To12(t)
     },
     time12To24(t) {
-      if (!t) {
-        return null
-      } else {
-        return moment(t, 'hh:mm A').format('HH:mm')
-      }
+      return time12To24(t)
     },
     handleGetTime(t) {
+      // When the time is updated, consume the emitted event to calculate the
+      // bed time based on sleep duration goal and past 7d efficiency.
       this.timeWake = t
-      this.timeBed = moment(this.timeWake, 'hh:mm A').subtract(
-        moment.duration(this.sleepDurationGoal / this.sleepEfficiency, 'minutes'))
-        .format('hh:mm A')
+      // this.timeBed = moment(this.timeWake, 'hh:mm A').subtract(
+      //   moment.duration(this.sleepDurationGoal / this.sleepEfficiency, 'minutes'))
+      //   .format('hh:mm A')
+      this.timeBed = subtractDurationFromTime(this.timeWake, this.sleepDurationGoal / this.sleepEfficiency)
       this.timeBed = this.roundUp15Minutes(this.timeBed)
     },
     roundUp15Minutes(t) {
-      const start = moment(t, 'hh:mm A');
-      const remainder = 15 - (start.minute() % 15);
-      const finish = moment(start)
-        .add(remainder, 'minutes')
-        .format('hh:mm A')
-      return finish
+      return roundUp15Minutes(t)
     },
     async goToNext() {
       // TODO: Save goal, but set as inactive.

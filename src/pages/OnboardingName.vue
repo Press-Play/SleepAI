@@ -8,6 +8,7 @@
       <div class="relative mt-6 mb-2 rounded-md shadow-sm max-w-md">
         <input type="text" name="name" v-model="name" @blur="validateName" v-on:input="validateName" class="w-full" placeholder="Name"/>
       </div>
+      <!-- TODO: Create component for button that loads -->
       <button @click="goToNext()" :disabled="error || name === '' || loading" class="inline-flex items-center place-content-center">
         <svg v-if="loading" class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
           <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
@@ -22,6 +23,7 @@
 <script>
 import { getFirestore, doc, setDoc } from 'firebase/firestore'
 import { getAuth, signInAnonymously, updateProfile } from "firebase/auth";
+// TODO: Remove vuefire and just get auth'ed user from User model.
 import { getCurrentUser } from 'vuefire'
 import User from '@/models/user'
 
