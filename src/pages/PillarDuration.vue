@@ -5,7 +5,7 @@
       <p>Sleep duration</p>
       <h3>Past 7 days</h3>
     </div>
-    <div class="flex flex-row place-content-around justify-center">
+    <div class="flex flex-row place-content-around justify-center gap-12 m-4">
       <MetricSleepDuration
         :initialDateFrom='dateFrom'
         :initialDateTo='dateTo'
@@ -14,7 +14,7 @@
         Hello this is some text about duration.
       </div>
     </div>
-    <div>
+    <div class="relative w-full h-96 border p-4">
       <Bar
         :data="data"
         :options="options"
@@ -35,6 +35,7 @@ import {
   PointElement,
   LineElement,
   Legend,
+  Title,
 } from 'chart.js'
 import ChartDataLabels from 'chartjs-plugin-datalabels'
 import MetricSleepDuration from '@/components/MetricSleepDuration'
@@ -45,7 +46,8 @@ ChartJS.register(
   BarElement,
   PointElement,
   LineElement,
-  Legend
+  Legend,
+  Title,
 )
 ChartJS.defaults.color = '#000'
 // ChartJS.defaults.font.family = 'Lexend'
@@ -63,8 +65,18 @@ export default {
       data: this.updateData(),
       options: {
         responsive: true,
-        maintainAspectRatio: true,
-        borderRadius: 5,
+        maintainAspectRatio: false,
+        borderRadius: 50,
+        datasets: {
+          bar: {
+            barThickness: 20,
+            categoryPercentage: 1.0,
+            // barPercentage: 0.5,
+          }
+        },
+        // layout: {
+        //     padding: 20
+        // },
         scales: {
           x: {
             display: true,
@@ -83,7 +95,7 @@ export default {
               display: true,
               text: 'Hours',
             },
-            stacked: true,
+            // stacked: true,
             ticks: {
               stepSize: 4,
             },
@@ -106,9 +118,13 @@ export default {
           },
         },
         plugins: {
+          title: {
+            display: true,
+            text: 'This week', //'13 – 19 Oct',
+          },
           legend: {
             display: true,
-            position: 'top',
+            position: 'bottom',
           },
           datalabels: {
             formatter: function(value) {
@@ -139,7 +155,7 @@ export default {
           {
             label: 'Efficiency',
             data: [0.8, 0.81, 0.82, 0.76, 0.8, 0.85, 0.79],
-            backgroundColor: 'rgba(235, 162, 54, 0.5)',
+            backgroundColor: 'rgba(235, 162, 54)',
             borderColor: 'rgb(235, 162, 54)',
             borderWidth: 2,
             type: 'line',
@@ -154,19 +170,22 @@ export default {
           {
             label: 'Duration',
             data: [7.5, 7, 7.24, 6.01, 6.78, 7.1, 8.5],
-            backgroundColor: 'rgba(54, 162, 235, 0.5)',
+            backgroundColor: 'rgba(54, 162, 235)',
             borderColor: 'rgb(54, 162, 235)',
             borderWidth: 2,
-            borderSkipped: 'top',
-            borderRadius: {bottomLeft: 5, bottomRight: 5},
+            // borderSkipped: 'top',
+            // borderRadius: {bottomLeft: 50, bottomRight: 50},
+            borderSkipped: false,
           },
           {
             label: 'Opportunity',
-            data: [0.4, 0.7, 1.1, 0.6, 0.5, 0.9, 0.8],
-            backgroundColor: 'rgba(162, 54, 235, 0.5)',
+            // data: [0.4, 0.7, 1.1, 0.6, 0.5, 0.9, 0.8],
+            data: [7.5+1, 7+1, 7.24+1, 6.01+1, 6.78+1, 7.1+1, 8.5+1],
+            backgroundColor: 'rgba(162, 54, 235)',
             borderColor: 'rgb(162, 54, 235)',
             borderWidth: 2,
-            borderSkipped: 'bottom',
+            // borderSkipped: 'bottom',
+            borderSkipped: false,
           },
         ]
       }
