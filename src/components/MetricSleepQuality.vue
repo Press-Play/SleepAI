@@ -24,7 +24,7 @@ export default {
     return {
       score: undefined,
       label: undefined,
-      icon: '🌟',
+      icon: 'metric_quality.png', //'🌟',
       name: 'Efficiency',
       // TODO: Default to today - 7 days.
       dateFrom: this.initialDateFrom,
@@ -37,8 +37,8 @@ export default {
       // Get current user.
       User.getCurrentUser()
         .then(user => {
-          // Query their consistency score for the past 7 days.
-          return user.getSleepDuration(this.dateFrom, this.dateTo)
+          // Query their quality score for the date range.
+          return user.getSleepQualityScore(this.dateFrom, this.dateTo)
         }).then(duration => {
           this.score = Math.round(duration.score * 100)
           this.label = Math.round(duration.score * 100) + '%'

@@ -25,7 +25,7 @@ export default {
     return {
       score: undefined,
       label: undefined,
-      icon: '⏱️',
+      icon: 'metric_duration.png', //'⏱️',
       name: 'Duration',
       // TODO: Default to today - 7 days.
       dateFrom: this.initialDateFrom,

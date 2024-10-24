@@ -1,5 +1,8 @@
 <template>
   <div class="w-36">
+    <div class="absolute flex justify-center items-center w-36 h-36">
+      <img class="mt-4 w-2/6 h-2/6" :src="require('@/assets/' + icon)">
+    </div>
     <Doughnut
       :data="data"
       :options="options"
@@ -25,7 +28,7 @@ export default {
   props: {
     value: Number, // Value is how full the bar should be from 0..100.
     label: String, // Label is the number to be shown, including units.
-    icon: String,
+    icon: String, // Path of the icon image.
     name: String, // Name is the metric is called.
   },
   data() {
@@ -40,23 +43,7 @@ export default {
         cutout: '85%',
         borderRadius: 100,
       },
-      plugins: [{
-        beforeDraw: function(chart) {
-          const {ctx} = chart
-          const width = chart.width
-          const height = chart.height
-          const fontSize = (height / 80).toFixed(2)
-          ctx.restore()
-          ctx.font = fontSize + "em Avenir"
-          ctx.textBaseline = "middle"
-
-          const icon = chart.data.datasets[0].icon || ''
-          const x = Math.round((width - ctx.measureText(icon).width) / 2)
-          const y = (height / 2) + 5
-          ctx.fillText(icon, x, y);
-          ctx.save()
-        }
-      }],
+      plugins: [],
     }
   },
   watch: {
@@ -75,7 +62,6 @@ export default {
             'rgb(54, 162, 235)',
             'rgb(225, 225, 225)',
           ],
-          icon: this.icon,
         }]
       }
       return this.data
